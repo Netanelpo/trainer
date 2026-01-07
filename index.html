@@ -70,13 +70,13 @@
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({text: input}),
+                    body: JSON.stringify({ text: input }),
                 }
             );
 
             const data = await response.json();
 
-            alert(data.result);
+            alert(data.response);
         } catch (err) {
             console.error(err);
             alert('Request failed');
