@@ -54,6 +54,27 @@
             padding-left: 20px;
             text-align: left;
         }
+
+        .lists {
+            display: flex;
+            gap: 16px;
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .list-column {
+            flex: 1;
+        }
+
+        .list-column h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .list-column ul {
+            padding-left: 20px;
+        }
     </style>
 </head>
 <body>
@@ -61,28 +82,40 @@
 <div class="container">
   <textarea
           id="userInput"
-          placeholder="Enter up to ~100 words"
+          placeholder="הדבק כאן רשימת מילים באנגלית שתרצה ללמוד."
   ></textarea>
 
-    <button onclick="start()">Start</button>
+    <button onclick="start()">התחל</button>
 
     <div id="error" class="error" hidden></div>
-    <ul id="output"></ul>
+    <div class="lists">
+        <div class="list-column">
+            <h3>מילים קודמות</h3>
+            <ul id="oldWords"></ul>
+        </div>
+
+        <div class="list-column">
+            <h3>מילים חדשות</h3>
+            <ul id="newWords"></ul>
+        </div>
+    </div>
 </div>
 
 <script>
     async function start() {
         const input = document.getElementById("userInput").value.trim();
-        const output = document.getElementById("output");
+        const oldList = document.getElementById("oldWords");
+        const newList = document.getElementById("newWords");
         const errorBox = document.getElementById("error");
 
         // Reset UI
-        output.innerHTML = "";
+        oldList.innerHTML = "";
+        newList.innerHTML = "";
         errorBox.hidden = true;
         errorBox.textContent = "";
 
         if (!input) {
-            errorBox.textContent = "Please enter some text.";
+            errorBox.textContent = "נא להזין טקסט.";
             errorBox.hidden = false;
             return;
         }
@@ -101,37 +134,47 @@
 
             const data = await response.json();
 
-            // 🔴 HTTP-LEVEL ERROR (fallback)
+            // 🔴 HTTP error
             if (!response.ok) {
-                errorBox.textContent = "Server error occurred.";
+                errorBox.textContent = "שגיאת שרת.";
                 errorBox.hidden = false;
                 return;
             }
 
-            // 🔴 LOGICAL ERROR FROM BACKEND (even if 200)
+            // 🔴 Logical error from backend
             if (data.error) {
                 errorBox.textContent = data.error;
                 errorBox.hidden = false;
                 return;
             }
 
-            // 🔴 Validate success payload
-            if (!Array.isArray(data.words)) {
-                errorBox.textContent = "Invalid response from server.";
+            // 🔴 Validate payload
+            if (
+                !Array.isArray(data.new_words) ||
+                !Array.isArray(data.old_words)
+            ) {
+                errorBox.textContent = "תגובה לא תקינה מהשרת.";
                 errorBox.hidden = false;
                 return;
             }
 
-            // 🟢 Render words
-            for (const word of data.words) {
+            // 🟢 Render old words (left)
+            for (const word of data.old_words) {
                 const li = document.createElement("li");
                 li.textContent = word;
-                output.appendChild(li);
+                oldList.appendChild(li);
+            }
+
+            // 🟢 Render new words (right)
+            for (const word of data.new_words) {
+                const li = document.createElement("li");
+                li.textContent = word;
+                newList.appendChild(li);
             }
 
         } catch (err) {
             console.error(err);
-            errorBox.textContent = "Network error. Please try again.";
+            errorBox.textContent = "שגיאת רשת. נסה שוב.";
             errorBox.hidden = false;
         }
     }
