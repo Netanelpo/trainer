@@ -16,7 +16,7 @@
             placeholder="הדבק כאן רשימת מילים באנגלית שתרצה ללמוד."
     ></textarea>
 
-    <button onclick="start()">התחל</button>
+    <button onclick="start()">לשלוח</button>
 
     <div id="error" class="error" hidden></div>
 
@@ -31,6 +31,12 @@
             <ul id="newWords"></ul>
         </div>
     </div>
+
+    <div class="actions">
+        <button onclick="trainOld()">תרגול מילים קודמות</button>
+        <button onclick="trainNew()">תרגול מילים חדשות</button>
+    </div>
+
 </div>
 
 <!-- JS moved here -->
