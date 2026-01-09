@@ -101,21 +101,28 @@
 
             const data = await response.json();
 
-            // Backend error
+            // 🔴 HTTP-LEVEL ERROR (fallback)
             if (!response.ok) {
-                errorBox.textContent = data.error || "Server error occurred.";
+                errorBox.textContent = "Server error occurred.";
                 errorBox.hidden = false;
                 return;
             }
 
-            // Validate response
+            // 🔴 LOGICAL ERROR FROM BACKEND (even if 200)
+            if (data.error) {
+                errorBox.textContent = data.error;
+                errorBox.hidden = false;
+                return;
+            }
+
+            // 🔴 Validate success payload
             if (!Array.isArray(data.words)) {
                 errorBox.textContent = "Invalid response from server.";
                 errorBox.hidden = false;
                 return;
             }
 
-            // Render words
+            // 🟢 Render words
             for (const word of data.words) {
                 const li = document.createElement("li");
                 li.textContent = word;
@@ -129,6 +136,3 @@
         }
     }
 </script>
-
-</body>
-</html>
