@@ -21,25 +21,23 @@
     <div id="error" class="error" hidden></div>
 
     <div class="lists">
+        <!-- OLD WORDS COLUMN -->
         <div class="list-column">
             <h3>מילים קודמות</h3>
             <ul id="oldWords"></ul>
+            <button onclick="trainOld()">תרגול מילים קודמות</button>
         </div>
 
+        <!-- NEW WORDS COLUMN -->
         <div class="list-column">
             <h3>מילים חדשות</h3>
             <ul id="newWords"></ul>
+            <button onclick="trainNew()">תרגול מילים חדשות</button>
         </div>
     </div>
-
-    <div class="actions">
-        <button onclick="trainOld()">תרגול מילים קודמות</button>
-        <button onclick="trainNew()">תרגול מילים חדשות</button>
-    </div>
-
 </div>
 
-<!-- JS moved here -->
+<!-- JS -->
 <script src="app.js"></script>
 
 </body>
