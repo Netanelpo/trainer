@@ -10,6 +10,7 @@ const ui = {
 };
 
 let inFlight = false;
+let context = {};
 
 /* -------------------------
    UI helpers
@@ -46,7 +47,9 @@ function showError(text) {
     ui.output.textContent = text;
 }
 
-function updateWordList(words) {
+function updateWordList(ctx) {
+    const words = ctx.words || [];
+
     ui.wordList.innerHTML = "";
     for (const word of words) {
         const li = document.createElement("li");
@@ -71,13 +74,8 @@ ui.textarea.addEventListener("input", () => {
 ui.sendBtn.addEventListener("click", async () => {
     if (inFlight) return;
 
-    const text = ui.textarea.value.trim();
-    if (!text) return;
-
-    const currentWords = [];
-    ui.wordList.querySelectorAll("li").forEach(li => {
-        currentWords.push(li.textContent);
-    });
+    const input = ui.textarea.value.trim();
+    if (!input) return;
 
     inFlight = true;
     setSendEnabled(false);
@@ -88,23 +86,27 @@ ui.sendBtn.addEventListener("click", async () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                text,
-                words: currentWords
+                input: input,
+                current_context: context
             }),
         });
 
         const data = await response.json();
 
-        if (!response.ok || data.error) {
-            throw new Error(data.error || "Server error");
+        if (!response.ok) {
+            throw new Error("Server error");
         }
 
-        if (!Array.isArray(data.words) || typeof data.output !== "string") {
+        if (
+            typeof data.output !== "string" ||
+            typeof data.context !== "object"
+        ) {
             throw new Error("Invalid response from server");
         }
 
         showOutput(data.output);
-        updateWordList(data.words);
+        context = data.context;
+        updateWordList(context);
         clearInput();
 
     } catch (err) {
