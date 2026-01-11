@@ -2,43 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8"/>
-    <title>Start Page</title>
-
+    <title>Trainer</title>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<div class="container">
-    <textarea
-            id="userInput"
-            placeholder="הדבק כאן רשימת מילים באנגלית שתרצה ללמוד."
-    ></textarea>
+<div class="app">
 
-    <button onclick="start()">לשלוח</button>
-
-    <div id="error" class="error" hidden></div>
-
-    <div class="lists">
-        <!-- OLD WORDS COLUMN -->
-        <div class="list-column">
-            <h3>מילים קודמות</h3>
-            <ul id="oldWords"></ul>
-            <button onclick="trainOld()">תרגול מילים קודמות</button>
-        </div>
-
-        <!-- NEW WORDS COLUMN -->
-        <div class="list-column">
-            <h3>מילים חדשות</h3>
-            <ul id="newWords"></ul>
-            <button onclick="trainNew()">תרגול מילים חדשות</button>
-        </div>
+    <!-- LEFT SIDEBAR -->
+    <div class="word-panel">
+        <h3>Words</h3>
+        <ul>
+            <li>sleep</li>
+            <li>eat</li>
+            <li>table</li>
+        </ul>
     </div>
-</div>
 
-<!-- JS -->
-<script src="app.js"></script>
+    <!-- RIGHT SIDE -->
+    <div class="main-panel">
+
+        <div class="input-box">
+            <textarea placeholder="Paste or type words to learn..."></textarea>
+            <button class="send-btn">Send</button>
+        </div>
+
+        <div class="output-box">
+            <h3>Response</h3>
+            <div class="output-text">
+                This is where the agent response will appear (about 20 words).
+            </div>
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
