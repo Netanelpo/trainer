@@ -93,17 +93,21 @@ ui.sendBtn.addEventListener("click", async () => {
 
         const data = await response.json();
 
+        // 🚨 Server returned an error (400 / 500)
         if (!response.ok) {
-            throw new Error("Server error");
+            throw new Error(data.output || "Server error");
         }
 
+        // 🚨 Invalid success payload
         if (
             typeof data.output !== "string" ||
-            typeof data.context !== "object"
+            typeof data.context !== "object" ||
+            data.context === null
         ) {
             throw new Error("Invalid response from server");
         }
 
+        // 🟢 Success
         showOutput(data.output);
         context = data.context;
         updateWordList(context);
@@ -124,3 +128,4 @@ ui.sendBtn.addEventListener("click", async () => {
 ------------------------- */
 
 setSendEnabled(false);
+
