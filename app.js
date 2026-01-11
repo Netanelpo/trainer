@@ -55,29 +55,30 @@ ui.sendBtn.addEventListener("click", async () => {
     const text = ui.textarea.value.trim();
     if (!text) return;
 
+    const currentWords = [];
+    ui.wordList.querySelectorAll("li").forEach(li => {
+        currentWords.push(li.textContent);
+    });
+
     setSendEnabled(false);
     showOutput("…");
 
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ text }),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                text,
+                words: currentWords
+            }),
         });
 
         const data = await response.json();
 
-        if (!response.ok) {
+        if (!response.ok || data.error) {
             throw new Error(data.error || "Server error");
         }
 
-        if (data.error) {
-            throw new Error(data.error);
-        }
-
-        // Expect: { output: "...", words: [...] }
         if (!Array.isArray(data.words) || typeof data.output !== "string") {
             throw new Error("Invalid response from server");
         }
