@@ -5,7 +5,10 @@ const ui = {
     sendBtn: document.querySelector(".send-btn"),
     output: document.querySelector(".output-text"),
     wordList: document.querySelector(".word-panel ul"),
+    inputBox: document.querySelector(".input-box")
 };
+
+let inFlight = false;
 
 /* -------------------------
    UI helpers
@@ -14,6 +17,17 @@ const ui = {
 function setSendEnabled(enabled) {
     ui.sendBtn.disabled = !enabled;
     ui.sendBtn.style.opacity = enabled ? "1" : "0.5";
+}
+
+function setLoading(isLoading) {
+    if (isLoading) {
+        ui.inputBox.classList.add("loading");
+        ui.textarea.disabled = true;
+        showOutput("Thinking...");
+    } else {
+        ui.inputBox.classList.remove("loading");
+        ui.textarea.disabled = false;
+    }
 }
 
 function clearInput() {
@@ -43,6 +57,7 @@ function updateWordList(words) {
 ------------------------- */
 
 ui.textarea.addEventListener("input", () => {
+    if (inFlight) return;
     const hasText = ui.textarea.value.trim().length > 0;
     setSendEnabled(hasText);
 });
@@ -52,6 +67,8 @@ ui.textarea.addEventListener("input", () => {
 ------------------------- */
 
 ui.sendBtn.addEventListener("click", async () => {
+    if (inFlight) return;
+
     const text = ui.textarea.value.trim();
     if (!text) return;
 
@@ -60,8 +77,9 @@ ui.sendBtn.addEventListener("click", async () => {
         currentWords.push(li.textContent);
     });
 
+    inFlight = true;
     setSendEnabled(false);
-    showOutput("…");
+    setLoading(true);
 
     try {
         const response = await fetch(API_URL, {
@@ -91,6 +109,9 @@ ui.sendBtn.addEventListener("click", async () => {
         console.error(err);
         showError(err.message || "Network error");
         setSendEnabled(true);
+    } finally {
+        inFlight = false;
+        setLoading(false);
     }
 });
 
