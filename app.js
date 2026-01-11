@@ -5,7 +5,8 @@ const ui = {
     sendBtn: document.querySelector(".send-btn"),
     output: document.querySelector(".output-text"),
     wordList: document.querySelector(".word-panel ul"),
-    inputBox: document.querySelector(".input-box")
+    inputBox: document.querySelector(".input-box"),
+    loading: document.querySelector(".loading-indicator")
 };
 
 let inFlight = false;
@@ -23,10 +24,12 @@ function setLoading(isLoading) {
     if (isLoading) {
         ui.inputBox.classList.add("loading");
         ui.textarea.disabled = true;
-        showOutput("Thinking...");
+        ui.loading.hidden = false;
+        ui.output.textContent = "";
     } else {
         ui.inputBox.classList.remove("loading");
         ui.textarea.disabled = false;
+        ui.loading.hidden = true;
     }
 }
 
@@ -58,8 +61,7 @@ function updateWordList(words) {
 
 ui.textarea.addEventListener("input", () => {
     if (inFlight) return;
-    const hasText = ui.textarea.value.trim().length > 0;
-    setSendEnabled(hasText);
+    setSendEnabled(ui.textarea.value.trim().length > 0);
 });
 
 /* -------------------------
