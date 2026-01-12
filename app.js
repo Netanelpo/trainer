@@ -10,11 +10,8 @@ const ui = {
 };
 
 let inFlight = false;
-let context = {};
+let context = { stage: "planner", language: "" };
 
-/* -------------------------
-   UI helpers
-------------------------- */
 
 function setSendEnabled(enabled) {
     ui.sendBtn.disabled = !enabled;
@@ -49,7 +46,6 @@ function showError(text) {
 
 function updateWordList(ctx) {
     const words = ctx.words || [];
-
     ui.wordList.innerHTML = "";
     for (const word of words) {
         const li = document.createElement("li");
@@ -58,18 +54,12 @@ function updateWordList(ctx) {
     }
 }
 
-/* -------------------------
-   Input state handling
-------------------------- */
 
 ui.textarea.addEventListener("input", () => {
     if (inFlight) return;
     setSendEnabled(ui.textarea.value.trim().length > 0);
 });
 
-/* -------------------------
-   Send action
-------------------------- */
 
 ui.sendBtn.addEventListener("click", async () => {
     if (inFlight) return;
@@ -86,19 +76,22 @@ ui.sendBtn.addEventListener("click", async () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                input: input,
-                current_context: context
+                input,
+                context
             }),
         });
 
-        const data = await response.json();
+        let data;
+        try {
+            data = await response.json();
+        } catch {
+            throw new Error("Invalid server response");
+        }
 
-        // 🚨 Server returned an error (400 / 500)
         if (!response.ok) {
             throw new Error(data.output || "Server error");
         }
 
-        // 🚨 Invalid success payload
         if (
             typeof data.output !== "string" ||
             typeof data.context !== "object" ||
@@ -107,7 +100,6 @@ ui.sendBtn.addEventListener("click", async () => {
             throw new Error("Invalid response from server");
         }
 
-        // 🟢 Success
         showOutput(data.output);
         context = data.context;
         updateWordList(context);
@@ -123,9 +115,5 @@ ui.sendBtn.addEventListener("click", async () => {
     }
 });
 
-/* -------------------------
-   Initial state
-------------------------- */
 
 setSendEnabled(false);
-
