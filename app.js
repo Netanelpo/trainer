@@ -3,6 +3,7 @@ const API_URL = "https://start-858515335800.me-west1.run.app";
 const ui = {
     textarea: document.querySelector(".input-box textarea"),
     sendBtn: document.querySelector(".send-btn"),
+    restartBtn: document.querySelector(".restart-btn"),
     output: document.querySelector(".output-text"),
     wordList: document.querySelector(".word-panel ul"),
     inputBox: document.querySelector(".input-box"),
@@ -54,12 +55,10 @@ function updateWordList(ctx) {
     }
 }
 
-
 ui.textarea.addEventListener("input", () => {
     if (inFlight) return;
     setSendEnabled(ui.textarea.value.trim().length > 0);
 });
-
 
 async function send(input) {
     inFlight = true;
@@ -110,16 +109,18 @@ async function send(input) {
     }
 }
 
-
 ui.sendBtn.addEventListener("click", () => {
     if (inFlight) return;
 
     const input = ui.textarea.value.trim();
     if (!input) return;
-
     send(input);
 });
 
+ui.restartBtn.addEventListener("click", () => {
+    if (inFlight) return;
+    send("");
+});
 
 setSendEnabled(false);
 send("");

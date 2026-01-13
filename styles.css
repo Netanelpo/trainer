@@ -15,7 +15,7 @@ body {
     height: 100vh;
 }
 
-/* Left sidebar (word list) */
+/* Left sidebar */
 .word-panel {
     width: 240px;
     background: #ffffff;
@@ -25,8 +25,7 @@ body {
 }
 
 .word-panel h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
+    margin: 0 0 12px 0;
 }
 
 .word-panel ul {
@@ -36,9 +35,10 @@ body {
 
 .word-panel li {
     margin-bottom: 6px;
+    font-size: 14px;
 }
 
-/* Right main area */
+/* Main area */
 .main-panel {
     flex: 1;
     display: flex;
@@ -59,10 +59,10 @@ body {
     height: 100%;
     resize: none;
     padding: 16px;
-    padding-bottom: 72px; /* space for buttons */
+    padding-bottom: 72px;
     font-size: 16px;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 10px;
     outline: none;
 }
 
@@ -70,7 +70,7 @@ body {
     border-color: #0066ff;
 }
 
-/* Buttons row */
+/* Buttons row inside textarea */
 .action-row {
     position: absolute;
     bottom: 12px;
@@ -79,41 +79,41 @@ body {
     gap: 10px;
 }
 
-/* Send button */
+/* Send */
 .send-btn {
     padding: 10px 18px;
     font-size: 14px;
-    cursor: pointer;
-    border-radius: 6px;
+    border-radius: 8px;
     border: none;
     background: #0066ff;
     color: white;
+    cursor: pointer;
 }
 
 .send-btn:hover {
     background: #0052cc;
 }
 
-/* Restart button */
+/* Restart */
 .restart-btn {
-    background: #f3f3f3;
-    border: 1px solid #ccc;
     padding: 10px 14px;
     font-size: 14px;
-    border-radius: 6px;
-    cursor: pointer;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f3f3f3;
     color: #444;
+    cursor: pointer;
 }
 
 .restart-btn:hover {
     background: #e6e6e6;
 }
 
-/* Output box */
+/* Output */
 .output-box {
     height: 160px;
     background: white;
-    border-radius: 8px;
+    border-radius: 10px;
     border: 1px solid #ddd;
     padding: 12px;
     display: flex;
@@ -124,7 +124,8 @@ body {
     flex: 1;
     overflow-y: auto;
     color: #333;
-    line-height: 1.4;
+    line-height: 1.5;
+    font-size: 15px;
 }
 
 /* Loading state */
@@ -142,6 +143,6 @@ body {
 .loading-indicator {
     font-size: 14px;
     color: #666;
-    margin-top: 8px;
+    margin-top: 6px;
     min-height: 18px;
 }
