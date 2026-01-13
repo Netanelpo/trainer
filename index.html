@@ -19,16 +19,20 @@
     <!-- Main interaction -->
     <div class="main-panel">
 
-        <!-- Input -->
+        <div class="top-bar">
+            <button class="restart-btn" onclick="send('')">Restart</button>
+        </div>
+
         <div class="input-box">
             <textarea placeholder="Type your message here"></textarea>
             <button class="send-btn">Send</button>
         </div>
 
-        <!-- Output -->
         <div class="output-box">
             <div class="output-text"></div>
-            <div class="loading-indicator" hidden>Analyzing your input</div>        </div>
+            <div class="loading-indicator" hidden>Analyzing your input</div>
+        </div>
+
     </div>
 
 </div>
