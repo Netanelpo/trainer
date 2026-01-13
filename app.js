@@ -10,7 +10,7 @@ const ui = {
 };
 
 let inFlight = false;
-let context = { stage: "planner", language: "" };
+let context = {};
 
 
 function setSendEnabled(enabled) {
@@ -61,12 +61,7 @@ ui.textarea.addEventListener("input", () => {
 });
 
 
-ui.sendBtn.addEventListener("click", async () => {
-    if (inFlight) return;
-
-    const input = ui.textarea.value.trim();
-    if (!input) return;
-
+async function send(input) {
     inFlight = true;
     setSendEnabled(false);
     setLoading(true);
@@ -74,7 +69,7 @@ ui.sendBtn.addEventListener("click", async () => {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 input,
                 context
@@ -113,7 +108,18 @@ ui.sendBtn.addEventListener("click", async () => {
         inFlight = false;
         setLoading(false);
     }
+}
+
+
+ui.sendBtn.addEventListener("click", () => {
+    if (inFlight) return;
+
+    const input = ui.textarea.value.trim();
+    if (!input) return;
+
+    send(input);
 });
 
 
 setSendEnabled(false);
+send("");
