@@ -40,7 +40,7 @@ ui.textarea.addEventListener("keydown", (e) => {
    Core send logic
 ------------------------- */
 
-async function send({ input = "", next = false } = {}) {
+async function send({input = "", next = false} = {}) {
     inFlight = true;
     setSendEnabled(false);
     setLoading(true);
@@ -49,7 +49,7 @@ async function send({ input = "", next = false } = {}) {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify({
                 input,
                 context,
@@ -108,7 +108,7 @@ ui.sendBtn.addEventListener("click", () => {
     const input = ui.textarea.value.trim();
     if (!input) return;
 
-    send({ input });
+    send({input});
 });
 
 ui.restartBtn.addEventListener("click", () => {
@@ -124,9 +124,9 @@ ui.restartBtn.addEventListener("click", () => {
 
 ui.nextBtn.addEventListener("click", () => {
     if (inFlight || ui.nextBtn.disabled) return;
-    send({ next: true });
+    ui.nextBtn.disabled = true; // ⬅️ disable immediately
+    send({next: true});
 });
-
 
 /* -------------------------
    Init
