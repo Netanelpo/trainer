@@ -1,57 +1,19 @@
-const API_URL = "https://start-858515335800.me-west1.run.app";
+// main.js
 
-const ui = {
-    textarea: document.querySelector(".input-box textarea"),
-    sendBtn: document.querySelector(".send-btn"),
-    restartBtn: document.querySelector(".restart-btn"),
-    nextBtn: document.querySelector(".next-btn"),
-    output: document.querySelector(".output-text"),
-    wordList: document.querySelector(".word-panel ul"),
-    inputBox: document.querySelector(".input-box"),
-    loading: document.querySelector(".loading-indicator")
-};
+import {
+    ui,
+    setSendEnabled,
+    setLoading,
+    clearInput,
+    showOutput,
+    showError,
+    updateWordList
+} from "./ui.js";
+
+const API_URL = "https://start-858515335800.me-west1.run.app";
 
 let inFlight = false;
 let context = {};
-
-
-/* -------------------------
-   UI helpers
-------------------------- */
-
-function setSendEnabled(enabled) {
-    ui.sendBtn.disabled = !enabled;
-    ui.sendBtn.style.opacity = enabled ? "1" : "0.5";
-}
-
-function setLoading(isLoading) {
-    ui.inputBox.classList.toggle("loading", isLoading);
-    ui.loading.hidden = !isLoading;
-}
-
-function clearInput() {
-    ui.textarea.value = "";
-    setSendEnabled(false);
-}
-
-function showOutput(text) {
-    ui.output.textContent = text;
-}
-
-function showError(text) {
-    ui.output.textContent = text;
-}
-
-function updateWordList(ctx) {
-    const words = Array.isArray(ctx.words) ? ctx.words : [];
-    ui.wordList.innerHTML = "";
-
-    for (const word of words) {
-        const li = document.createElement("li");
-        li.textContent = word;
-        ui.wordList.appendChild(li);
-    }
-}
 
 
 /* -------------------------
@@ -60,6 +22,7 @@ function updateWordList(ctx) {
 
 ui.textarea.addEventListener("input", () => {
     if (inFlight) return;
+    if (!ui.nextBtn.disabled) return; // Next enabled → block send
     setSendEnabled(ui.textarea.value.trim().length > 0);
 });
 
@@ -151,7 +114,6 @@ ui.sendBtn.addEventListener("click", () => {
 ui.restartBtn.addEventListener("click", () => {
     if (inFlight) return;
 
-    // reset local state
     context = {};
     ui.nextBtn.disabled = true;
     clearInput();
