@@ -4,6 +4,7 @@ const ui = {
     textarea: document.querySelector(".input-box textarea"),
     sendBtn: document.querySelector(".send-btn"),
     restartBtn: document.querySelector(".restart-btn"),
+    nextBtn: document.querySelector(".next-btn"),
     output: document.querySelector(".output-text"),
     wordList: document.querySelector(".word-panel ul"),
     inputBox: document.querySelector(".input-box"),
@@ -14,22 +15,18 @@ let inFlight = false;
 let context = {};
 
 
+/* -------------------------
+   UI helpers
+------------------------- */
+
 function setSendEnabled(enabled) {
     ui.sendBtn.disabled = !enabled;
     ui.sendBtn.style.opacity = enabled ? "1" : "0.5";
 }
 
 function setLoading(isLoading) {
-    if (isLoading) {
-        ui.inputBox.classList.add("loading");
-        ui.textarea.disabled = true;
-        ui.loading.hidden = false;
-        ui.output.textContent = "";
-    } else {
-        ui.inputBox.classList.remove("loading");
-        ui.textarea.disabled = false;
-        ui.loading.hidden = true;
-    }
+    ui.inputBox.classList.toggle("loading", isLoading);
+    ui.loading.hidden = !isLoading;
 }
 
 function clearInput() {
@@ -46,8 +43,9 @@ function showError(text) {
 }
 
 function updateWordList(ctx) {
-    const words = ctx.words || [];
+    const words = Array.isArray(ctx.words) ? ctx.words : [];
     ui.wordList.innerHTML = "";
+
     for (const word of words) {
         const li = document.createElement("li");
         li.textContent = word;
@@ -55,23 +53,44 @@ function updateWordList(ctx) {
     }
 }
 
+
+/* -------------------------
+   Input handling
+------------------------- */
+
 ui.textarea.addEventListener("input", () => {
     if (inFlight) return;
     setSendEnabled(ui.textarea.value.trim().length > 0);
 });
 
-async function send(input) {
+ui.textarea.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        if (!ui.sendBtn.disabled && !inFlight) {
+            ui.sendBtn.click();
+        }
+    }
+});
+
+
+/* -------------------------
+   Core send logic
+------------------------- */
+
+async function send({ input = "", next = false } = {}) {
     inFlight = true;
     setSendEnabled(false);
     setLoading(true);
+    ui.textarea.disabled = true;
 
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 input,
-                context
+                context,
+                next
             }),
         });
 
@@ -94,33 +113,63 @@ async function send(input) {
             throw new Error("Invalid response from server");
         }
 
+        // ---- Apply server result ----
         showOutput(data.output);
         context = data.context;
         updateWordList(context);
         clearInput();
 
+        // Server controls Next
+        ui.nextBtn.disabled = data.next !== true;
+
     } catch (err) {
         console.error(err);
         showError(err.message || "Network error");
+        ui.nextBtn.disabled = true;
         setSendEnabled(true);
     } finally {
         inFlight = false;
         setLoading(false);
+        ui.textarea.disabled = false;
     }
 }
+
+
+/* -------------------------
+   Button handlers
+------------------------- */
 
 ui.sendBtn.addEventListener("click", () => {
     if (inFlight) return;
 
     const input = ui.textarea.value.trim();
     if (!input) return;
-    send(input);
+
+    send({ input });
 });
 
 ui.restartBtn.addEventListener("click", () => {
     if (inFlight) return;
-    send("");
+
+    // reset local state
+    context = {};
+    ui.nextBtn.disabled = true;
+    clearInput();
+    showOutput("");
+
+    send(); // initial request
 });
 
+ui.nextBtn.addEventListener("click", () => {
+    if (inFlight || ui.nextBtn.disabled) return;
+    send({ next: true });
+});
+
+
+/* -------------------------
+   Init
+------------------------- */
+
 setSendEnabled(false);
-send("");
+ui.nextBtn.disabled = true;
+send(); // initial load

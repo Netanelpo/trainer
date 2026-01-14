@@ -1,0 +1,28 @@
+.input-box {
+    position: relative;
+    flex: 1;
+}
+
+.input-box textarea {
+    width: 100%;
+    height: 100%;
+    resize: none;
+    padding: 16px;
+    padding-bottom: 72px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+}
+
+.input-box textarea:focus {
+    border-color: #0066ff;
+}
+
+.action-row {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    display: flex;
+    gap: 10px;
+}

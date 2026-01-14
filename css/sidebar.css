@@ -1,0 +1,21 @@
+.word-panel {
+    width: 240px;
+    background: #ffffff;
+    border-right: 1px solid #ddd;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.word-panel h3 {
+    margin: 0 0 12px 0;
+}
+
+.word-panel ul {
+    padding-left: 18px;
+    margin: 0;
+}
+
+.word-panel li {
+    margin-bottom: 6px;
+    font-size: 14px;
+}

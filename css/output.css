@@ -1,0 +1,17 @@
+.output-box {
+    height: 160px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.output-text {
+    flex: 1;
+    overflow-y: auto;
+    color: #333;
+    line-height: 1.5;
+    font-size: 15px;
+}
