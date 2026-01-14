@@ -30,8 +30,53 @@ export function clearInput() {
     setSendEnabled(false);
 }
 
+function isRTL(text) {
+    return /[\u0590-\u05FF\u0600-\u06FF]/.test(text); // Hebrew/Arabic ranges
+}
+
 export function showOutput(text) {
-    ui.output.textContent = text;
+    // Clear previous output
+    ui.output.replaceChildren();
+
+    if (!text) return;
+
+    const rtl = isRTL(text);
+
+    // Set direction on the container
+    ui.output.dir = rtl ? "rtl" : "ltr";
+    ui.output.style.textAlign = rtl ? "right" : "left";
+
+    // If not RTL, render plain text
+    if (!rtl) {
+        ui.output.textContent = text;
+        return;
+    }
+
+    // RTL: isolate LTR tokens (English words), including quoted ones like 'engineer'
+    const frag = document.createDocumentFragment();
+    const re = /(['"])([A-Za-z][A-Za-z0-9_-]*)\1|\b[A-Za-z][A-Za-z0-9_-]*\b/g;
+
+    let last = 0;
+    let m;
+
+    while ((m = re.exec(text)) !== null) {
+        if (m.index > last) {
+            frag.appendChild(document.createTextNode(text.slice(last, m.index)));
+        }
+
+        const bdi = document.createElement("bdi");
+        bdi.dir = "ltr";
+        bdi.textContent = m[0]; // safe text
+        frag.appendChild(bdi);
+
+        last = re.lastIndex;
+    }
+
+    if (last < text.length) {
+        frag.appendChild(document.createTextNode(text.slice(last)));
+    }
+
+    ui.output.appendChild(frag);
 }
 
 export function showError(text) {
