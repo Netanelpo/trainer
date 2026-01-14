@@ -8,10 +8,18 @@
     flex-direction: column;
 }
 
+.output-text bdi {
+    unicode-bidi: isolate;
+    display: inline-block;
+}
+
 .output-text {
     flex: 1;
     overflow-y: auto;
     color: #333;
     line-height: 1.5;
     font-size: 15px;
+    direction: rtl;
+    text-align: right;
+    unicode-bidi: plaintext;
 }
