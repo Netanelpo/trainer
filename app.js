@@ -9,7 +9,6 @@ const I18N = {
     'Hebrew': {
         dir: 'rtl',
         appTitle: 'מאמן שפות',
-        mockMode: 'מצב דמה',
         learnedWords: 'מילים שנלמדו',
         noWordsYet: 'עדיין לא נוספו מילים',
         pasteWordsTitle: 'הדבק את המילים שלמדת',
@@ -30,7 +29,6 @@ const I18N = {
     'Russian': {
         dir: 'ltr',
         appTitle: 'Языковой Тренажер',
-        mockMode: 'Тест-режим',
         learnedWords: 'Изученные слова',
         noWordsYet: 'Слова еще не добавлены',
         pasteWordsTitle: 'Вставьте изученные слова',
@@ -51,7 +49,6 @@ const I18N = {
     'Ukrainian': {
         dir: 'ltr',
         appTitle: 'Мовний Тренажер',
-        mockMode: 'Тест-режим',
         learnedWords: 'Вивчені слова',
         noWordsYet: 'Слова ще не додані',
         pasteWordsTitle: 'Вставте вивчені слова',
@@ -72,7 +69,6 @@ const I18N = {
     'Spanish': {
         dir: 'ltr',
         appTitle: 'Entrenador de Idiomas',
-        mockMode: 'Modo Prueba',
         learnedWords: 'Palabras aprendidas',
         noWordsYet: 'No hay palabras añadidas',
         pasteWordsTitle: 'Pega tus palabras aprendidas',
@@ -93,7 +89,6 @@ const I18N = {
     'French': {
         dir: 'ltr',
         appTitle: 'Entraîneur de Langue',
-        mockMode: 'Mode Test',
         learnedWords: 'Mots appris',
         noWordsYet: 'Aucun mot ajouté',
         pasteWordsTitle: 'Collez vos mots appris',
@@ -122,7 +117,6 @@ const defaultState = {
     context: {},
     phase: 'setup', // 'setup', 'training', 'done'
     trainingMode: null, // 'EN_TO_TARGET', 'TARGET_TO_EN'
-    useMock: false
 };
 
 let state = { ...defaultState };
@@ -132,8 +126,6 @@ function loadState() {
     if (stored) {
         state = JSON.parse(stored);
     }
-    // Ensure mock toggle reflects state immediately
-    document.getElementById('mockToggle').checked = state.useMock;
     document.getElementById('languageSelect').value = state.language;
 }
 
@@ -207,7 +199,6 @@ function addChatBubble(text, sender) {
 }
 
 function showLoading(isLoading) {
-    const btn = document.querySelector('button:not(:disabled)'); // rough check
     if(isLoading) {
         document.body.style.cursor = 'wait';
     } else {
@@ -224,81 +215,6 @@ function showError(msg) {
     } else {
         banner.classList.add('hidden');
     }
-}
-
-/**
- * MOCK AGENT LOGIC
- */
-async function mockAgentCall(payload) {
-    // Simulate network delay
-    await new Promise(r => setTimeout(r, 600));
-
-    const { action, input, context } = payload;
-    const lang = context.language;
-    const words = context.words || [];
-
-    // 1. SET_WORDS
-    if (action === 'SET_WORDS') {
-        // Parse words
-        const rawList = input.split(/[\n,]+/).map(s => s.trim()).filter(s => s.length > 0);
-        // Dedupe preserving case
-        const uniqueWords = [...new Set(rawList)];
-
-        return {
-            output: `Great! I've saved ${uniqueWords.length} words. Please choose a training direction.`,
-            words: uniqueWords,
-            context: { ...context, words: uniqueWords },
-            isDone: false
-        };
-    }
-
-    // 2. TRAINING
-    if (action === 'EN_TO_TARGET_TRAINING' || action === 'TARGET_TO_EN_TRAINING') {
-        let currentIndex = context.mockIndex || 0;
-
-        // Check if student just answered
-        let replyPrefix = "";
-        if (input) {
-            replyPrefix = (Math.random() > 0.3) ? "Correct! " : "Close enough. ";
-            currentIndex++;
-        }
-
-        // Check if done
-        if (currentIndex >= Math.min(words.length, 5)) { // Limit to 5 for mock
-            return {
-                output: `${replyPrefix} That was the last word. Good job!`,
-                words: words,
-                context: { ...context, mockIndex: currentIndex },
-                isDone: true
-            };
-        }
-
-        // Ask next question
-        const nextWord = words[currentIndex];
-        const isEnSource = action === 'EN_TO_TARGET_TRAINING';
-        const question = isEnSource
-            ? `How do you say "${nextWord}" in ${lang}?`
-            : `What does "${nextWord}" mean in English?`;
-
-        return {
-            output: `${replyPrefix}${question}`,
-            words: words,
-            context: { ...context, mockIndex: currentIndex },
-            isDone: false
-        };
-    }
-
-    // 3. FEEDBACK
-    if (action === 'FEEDBACK') {
-        return {
-            output: `Mock Feedback: You practiced ${words.length} words. You are doing great in ${lang}!`,
-            words: words,
-            context: context,
-            isDone: true
-        };
-    }
-
-    return { output: "Error: Unknown mock action", words: words, context: context, isDone: false };
 }
 
 /**
@@ -320,18 +236,12 @@ async function callAgent(action, inputVal = "") {
 
     try {
         let response;
-        if (state.useMock) {
-            console.log('Calling Mock Agent:', payload);
-            response = await mockAgentCall(payload);
-        } else {
-            const res = await fetch(AGENT_ENDPOINT, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            response = await res.json();
-        }
+        const res = await fetch(AGENT_ENDPOINT, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        response = await res.json();
 
         // Handle Response
         if (response.words) {
@@ -378,12 +288,6 @@ function bindEvents() {
         updateUI();
     });
 
-    // Mock Toggle
-    document.getElementById('mockToggle').addEventListener('change', (e) => {
-        state.useMock = e.target.checked;
-        saveState();
-    });
-
     // 1. Send Words
     document.getElementById('sendWordsBtn').addEventListener('click', () => {
         const txt = document.getElementById('wordsInput').value;
@@ -398,8 +302,6 @@ function bindEvents() {
         resetTranscript();
         saveState();
         updateUI();
-        // Reset mock index if using mock
-        state.context.mockIndex = 0;
         callAgent('EN_TO_TARGET_TRAINING', '');
     });
 
@@ -410,7 +312,6 @@ function bindEvents() {
         resetTranscript();
         saveState();
         updateUI();
-        state.context.mockIndex = 0;
         callAgent('TARGET_TO_EN_TRAINING', '');
     });
 
