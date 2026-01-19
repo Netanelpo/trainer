@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Word Trainer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<div class="app">
+
+    <div class="word-panel">
+        <h3>Words</h3>
+        <ul></ul>
+    </div>
+
+    <div class="main-panel">
+
+        <div class="input-box">
+            <textarea placeholder="Type your message here"></textarea>
+
+            <div class="action-row">
+                <button class="restart-btn">Restart</button>
+                <button class="send-btn">Send</button>
+                <button class="next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+        <div class="output-box">
+            <div class="output-text"></div>
+            <div class="loading-indicator" hidden>Analyzing your input</div>
+        </div>
+
+    </div>
+
+</div>
+
+<script type="module" src="./js/main.js"></script>
+
+</body>
+</html>
