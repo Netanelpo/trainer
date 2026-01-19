@@ -8,7 +8,6 @@ A lightweight, static web application designed to help students memorize vocabul
 * **Dual-Direction Training:** Train English &rarr; Target Language or vice versa.
 * **AI Chat Agent:** Conversational interface for testing and feedback.
 * **Localization:** Built-in support for Hebrew (RTL), Russian, Ukrainian, Spanish, and French.
-* **Offline/Mock Support:** Includes a full mock mode for testing without a backend.
 * **State Persistence:** Remembers your words and language preference via `localStorage`.
 * **Responsive:** Works on Desktop (split view) and Mobile (stacked view).
 

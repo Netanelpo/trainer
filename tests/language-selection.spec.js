@@ -12,7 +12,6 @@ function stateWith(overrides = {}) {
         context: {},
         phase: 'setup',
         trainingMode: null,
-        useMock: false,
         ...overrides,
     };
 }
