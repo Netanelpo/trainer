@@ -235,13 +235,21 @@ async function callAgent(action, inputVal = "") {
     };
 
     try {
-        let response;
         const res = await fetch(AGENT_ENDPOINT, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
         });
-        response = await res.json();
+
+        const response = await res.json();
+        if (!res.ok) {
+            const msg = response?.error || `HTTP ${res.status}`;
+            throw new Error(msg);
+        }
+
+        if (!response) {
+            throw new Error('Invalid JSON');
+        }
 
         // Handle Response
         if (response.words) {
@@ -271,7 +279,7 @@ async function callAgent(action, inputVal = "") {
 
     } catch (err) {
         console.error(err);
-        showError(I18N[state.language].errorNetwork);
+        showError(err?.message || I18N[state.language].errorNetwork);
     } finally {
         showLoading(false);
     }
