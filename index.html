@@ -1,42 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Word Trainer</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="stylesheet" href="css/app.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polyglot Trainer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<div class="app">
-
-    <div class="word-panel">
-        <h3>Words</h3>
-        <ul></ul>
+<header class="app-header">
+    <div class="header-content">
+        <h1 data-i18n="appTitle">Polyglot Trainer</h1>
+        <div class="header-controls">
+            <div class="mock-toggle-wrapper">
+                <label for="mockToggle" data-i18n="mockMode">Mock Mode</label>
+                <input type="checkbox" id="mockToggle">
+            </div>
+            <div class="lang-selector">
+                <span id="currentLangBadge" class="lang-badge">Language: Hebrew</span>
+                <select id="languageSelect" aria-label="Select Language">
+                    <option value="Hebrew">Hebrew (עברית)</option>
+                    <option value="Russian">Russian (Русский)</option>
+                    <option value="Ukrainian">Ukrainian (Українська)</option>
+                    <option value="Spanish">Spanish (Español)</option>
+                    <option value="French">French (Français)</option>
+                </select>
+            </div>
+        </div>
     </div>
+</header>
 
-    <div class="main-panel">
+<main class="app-container">
+    <div id="errorBanner" class="error-banner hidden" role="alert"></div>
 
-        <div class="input-box">
-            <textarea placeholder="Type your message here"></textarea>
+    <aside class="words-panel">
+        <div class="panel-header">
+            <h2 data-i18n="learnedWords">Learned Words</h2>
+            <span id="wordCount" class="badge">0</span>
+        </div>
+        <div id="wordsList" class="words-list-content">
+            <p class="empty-state" data-i18n="noWordsYet">No words added yet.</p>
+        </div>
+    </aside>
 
-            <div class="action-row">
-                <button class="restart-btn">Restart</button>
-                <button class="send-btn">Send</button>
-                <button class="next-btn" disabled>Next</button>
+    <section class="interaction-panel">
+
+        <div id="setupPhase" class="phase-container">
+            <h2 data-i18n="pasteWordsTitle">Paste your learned words</h2>
+            <p class="helper-text" data-i18n="pasteWordsHelper">Separate words with commas or new lines.</p>
+            <textarea id="wordsInput" placeholder="e.g. apple, run, beautiful..."></textarea>
+            <button id="sendWordsBtn" class="btn-primary" data-i18n="btnSendWords">Send Words</button>
+        </div>
+
+        <div id="modeSelectPhase" class="phase-container hidden">
+            <h2 data-i18n="startTrainingTitle">Start Training</h2>
+            <p class="helper-text" data-i18n="chooseDirection">Choose your training direction:</p>
+            <div class="mode-buttons">
+                <button id="modeEnToTarget" class="btn-mode">
+                    English &rarr; <span class="target-lang-name">Target</span>
+                </button>
+                <button id="modeTargetToEn" class="btn-mode">
+                    <span class="target-lang-name">Target</span> &rarr; English
+                </button>
+            </div>
+            <div class="chat-preview" id="setupFeedback"></div>
+        </div>
+
+        <div id="trainingPhase" class="phase-container hidden">
+            <div id="chatTranscript" class="chat-transcript" aria-live="polite">
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chatInput" autocomplete="off" placeholder="...">
+                <button id="chatSendBtn" class="btn-primary" data-i18n="btnSend">Send</button>
             </div>
         </div>
 
-        <div class="output-box">
-            <div class="output-text"></div>
-            <div class="loading-indicator" hidden>Analyzing your input</div>
+        <div id="donePhase" class="phase-container hidden">
+            <div class="done-message">
+                <h2 data-i18n="sessionComplete">Session Complete!</h2>
+                <p data-i18n="whatNext">What would you like to do?</p>
+            </div>
+            <div class="action-buttons">
+                <button id="btnFeedback" class="btn-secondary" data-i18n="btnGetFeedback">Get Feedback</button>
+                <button id="btnTrainAgain" class="btn-primary" data-i18n="btnTrainAgain">Train Again</button>
+            </div>
         </div>
+    </section>
+</main>
 
-    </div>
-
-</div>
-
-<script type="module" src="./js/main.js"></script>
-
+<script src="app.js"></script>
 </body>
 </html>
