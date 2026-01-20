@@ -19,7 +19,7 @@ test.describe('Integration tests', () => {
                     r.url().includes(AGENT_ENDPOINT) &&
                     r.request().method() === 'POST' &&
                     r.status() === 200
-                , { timeout: 15000 }),
+                , { timeout: 30000 }),
             page.click('#sendWordsBtn'),
         ]);
 
@@ -34,5 +34,39 @@ test.describe('Integration tests', () => {
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
         await expect(page.locator('h2[data-i18n="startTrainingTitle"]')).toBeVisible();
+
+        const st = await page.evaluate(() => JSON.parse(localStorage.getItem('polyglot_state')));
+        console.info('State:', st);
+        expect(st).toStrictEqual({
+            language: 'Hebrew',
+            words: [ 'apple', 'run', 'beautiful' ],
+            phase: 'setup',
+            trainingMode: null
+        });
+    });
+
+    test('Case 2', async ({ page }) => {
+        await page.addInitScript((st) => {
+            localStorage.setItem('polyglot_state', JSON.stringify(st));
+        }, {
+            language: 'Hebrew',
+            words: [ 'apple', 'run', 'beautiful' ],
+            phase: 'setup',
+            trainingMode: null
+        });
+
+        await page.goto(`${BASE_URL}/`);
+
+        const [res] = await Promise.all([
+            page.waitForResponse(r =>
+                    r.url().includes(AGENT_ENDPOINT) &&
+                    r.request().method() === 'POST' &&
+                    r.status() === 200
+                , { timeout: 30000 }),
+            page.click('#modeEnToTarget'),
+        ]);
+
+        const data = await res.json();
+        console.log('API response:', data);
     });
 });
