@@ -19,14 +19,14 @@ test.describe('Word selection (Set Words) — tests', () => {
         await page.click('#sendWordsBtn');
     });
 
-    test('I paste hi and click send - API returns 500 -> shows error banner', async ({ page }) => {
+    test('I paste hi and click send - API returns 500 -> shows error banner', async ({page}) => {
         await page.goto(`${BASE_URL}/`);
 
         await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
             await route.fulfill({
                 status: 500,
                 contentType: 'application/json',
-                body: JSON.stringify({ error: 'boom' }),
+                body: JSON.stringify({error: 'boom'}),
             });
         });
 
@@ -91,12 +91,36 @@ test.describe('Word selection (Set Words) — tests', () => {
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
 
-        // output message for SET_WORDS goes here (not in chat)
-        await expect(page.locator('#setupFeedback')).toHaveText('this is the output:');
-
-        // optional: mode select becomes visible after words exist
+        await expect(page.locator('#modeSelectFeedback')).toBeVisible();
+        await expect(page.locator('#modeSelectFeedback')).toHaveText('this is the output:');
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
         await expect(page.locator('h2[data-i18n="startTrainingTitle"]')).toBeVisible();
     });
+
+    test('API returns no words', async ({page}) => {
+        await page.goto(`${BASE_URL}/`);
+
+        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
+            await route.fulfill({
+                status: 200,
+                contentType: 'application/json',
+                body: JSON.stringify({
+                    output: 'this is the output:',
+                }),
+            });
+        });
+
+        await page.fill('#wordsInput', 'hi');
+
+        await page.click('#sendWordsBtn');
+
+        await expect(page.locator('#wordCount')).toHaveText('0');
+
+        await expect(page.locator('#modeSelectFeedback')).toBeHidden();
+        await expect(page.locator('#setupFeedback')).toHaveText('this is the output:');
+        await expect(page.locator('#setupPhase')).toBeVisible();
+        await expect(page.locator('#modeSelectPhase')).toBeHidden();
+        await expect(page.locator('h2[data-i18n="startTrainingTitle"]')).toBeHidden();
+    })
 });
