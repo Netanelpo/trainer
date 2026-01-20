@@ -84,7 +84,7 @@ test.describe('Integration tests', () => {
             language: 'Hebrew',
             words: [ 'apple', 'run', 'beautiful' ],
             phase: 'training',
-            trainingMode: 'EN_TO_TARGET'
+            trainingMode: 'EN_TO_TARGET_TRAINING'
         });
     });
 });
