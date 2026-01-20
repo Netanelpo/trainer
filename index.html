@@ -31,11 +31,13 @@
             <h2 data-i18n="learnedWords">Learned Words</h2>
             <span id="wordCount" class="badge">0</span>
         </div>
-        <div id="wordsList" class="words-list-content">
-            <p class="empty-state" data-i18n="noWordsYet">No words added yet.</p>
-        </div>
-        <div id="wordsPanelFooter" class="panel-footer hidden">
-            <button id="btnChangeWords" class="btn-reset" data-i18n="btnChangeWords">
+
+        <div class="sidebar-content">
+            <div id="wordsList" class="words-list-container">
+                <p class="empty-state" data-i18n="noWordsYet">No words added yet.</p>
+            </div>
+
+            <button id="btnChangeWords" class="btn-reset hidden" data-i18n="btnChangeWords">
                 Change Words (Reset)
             </button>
         </div>
@@ -56,6 +58,8 @@
         <div id="modeSelectPhase" class="phase-container hidden">
             <h2 data-i18n="startTrainingTitle">Start Training</h2>
 
+            <div class="chat-preview hidden" id="modeSelectFeedback"></div>
+
             <p class="helper-text" data-i18n="chooseDirection">Choose your training direction:</p>
             <div class="mode-buttons">
                 <button id="modeEnToTarget" class="btn-mode">
@@ -66,7 +70,6 @@
                 </button>
             </div>
         </div>
-
 
         <div id="trainingPhase" class="phase-container hidden">
             <div id="chatTranscript" class="chat-transcript" aria-live="polite">

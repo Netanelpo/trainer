@@ -1,7 +1,7 @@
 /**
  * APP CONFIGURATION
  */
-const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
+const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
 const LOCAL_STORAGE_KEY = 'polyglot_state';
 
 // Localization Dictionary
@@ -143,7 +143,6 @@ function saveState() {
 }
 
 function resetTranscript() {
-    // Only resets UI, doesn't affect persistable state logic directly unless needed
     document.getElementById('chatTranscript').innerHTML = '';
 }
 
@@ -155,7 +154,7 @@ function updateUI() {
 
     // 1. Direction and Globals
     document.documentElement.setAttribute('dir', langData.dir);
-    document.documentElement.lang = state.language === 'Hebrew' ? 'he' : 'en'; // Simple fallback
+    document.documentElement.lang = state.language === 'Hebrew' ? 'he' : 'en';
 
     // 2. Text Content Localization
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -172,14 +171,14 @@ function updateUI() {
 
     // 4. Words List rendering
     const wordsList = document.getElementById('wordsList');
-    const wordsPanelFooter = document.getElementById('wordsPanelFooter');
+    const btnChangeWords = document.getElementById('btnChangeWords');
 
     if (state.words.length > 0) {
         wordsList.innerHTML = state.words.map(w => `<span class="word-chip">${w}</span>`).join('');
-        wordsPanelFooter.classList.remove('hidden'); // Show reset button if words exist
+        btnChangeWords.classList.remove('hidden'); // Show button right after words
     } else {
         wordsList.innerHTML = `<p class="empty-state">${langData.noWordsYet}</p>`;
-        wordsPanelFooter.classList.add('hidden'); // Hide reset button if no words
+        btnChangeWords.classList.add('hidden');
     }
 
     // 5. Phase Visibility
@@ -198,7 +197,7 @@ function updateUI() {
         document.getElementById('trainingPhase').classList.remove('hidden');
     } else if (state.phase === 'done') {
         document.getElementById('donePhase').classList.remove('hidden');
-        document.getElementById('trainingPhase').classList.remove('hidden'); // Keep chat visible in background/above
+        document.getElementById('trainingPhase').classList.remove('hidden');
     }
 }
 
@@ -218,8 +217,6 @@ function showLoading(isLoading) {
         document.body.style.cursor = 'wait';
         buttons.forEach(btn => {
             btn.disabled = true;
-            // Optional: Store original text to restore later if needed,
-            // but simplified here for generic loading state
             btn.dataset.originalText = btn.textContent;
             btn.style.opacity = '0.7';
         });
@@ -235,9 +232,8 @@ function showLoading(isLoading) {
         buttons.forEach(btn => {
             btn.disabled = false;
             btn.style.opacity = '1';
-            // Restore text if we changed it
+            // Restore text via I18N updates in updateUI to ensure correct lang
             if (btn.id === 'sendWordsBtn') {
-                // Force updateUI to reset text via I18N, or reset manually:
                 updateUI();
             }
         });
@@ -259,16 +255,17 @@ function showError(msg) {
  * API INTERACTION
  */
 async function callAgent(action, inputVal = "") {
-    console.info('[callAgent]', {action, inputVal});
     showLoading(true);
     showError(null);
 
-    // Clear previous feedback when starting a new call
-    const feedbackEl = document.getElementById('setupFeedback');
-    if (feedbackEl) {
-        feedbackEl.classList.add('hidden');
-        feedbackEl.textContent = '';
-    }
+    // Clear previous feedbacks
+    ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.classList.add('hidden');
+            el.textContent = '';
+        }
+    });
 
     const payload = {
         input: inputVal,
@@ -298,29 +295,35 @@ async function callAgent(action, inputVal = "") {
             state.words = response.words;
         }
 
-        // UI Logic based on Action & Response
-        if (action === 'SET_WORDS') {
-            state.phase = 'setup'; // stays in setup until words confirmed and updateUI runs
+        if (response.isDone) {
+            state.phase = 'done';
+        }
 
-            // FIX: If we have output but NO words extracted (or even if we do), show the output.
-            // If words were found, updateUI will switch screens.
-            // If words were NOT found, we stay on setup, so we need to show the feedback there.
-            if (response.output) {
+        // Save and Update UI *before* showing output messages so the correct screen is visible
+        saveState();
+        updateUI();
+
+        // FIX 2: Handle output message visibility depending on resulting phase
+        if (action === 'SET_WORDS' && response.output) {
+            if (state.words.length > 0) {
+                // We successfully got words, now on Mode Select screen
+                const feedbackEl = document.getElementById('modeSelectFeedback');
+                if (feedbackEl) {
+                    feedbackEl.textContent = response.output;
+                    feedbackEl.classList.remove('hidden');
+                }
+            } else {
+                // Failed to get words, still on Setup screen
+                const feedbackEl = document.getElementById('setupFeedback');
                 if (feedbackEl) {
                     feedbackEl.textContent = response.output;
                     feedbackEl.classList.remove('hidden');
                 }
             }
         } else if (response.output) {
+            // Normal chat response
             addChatBubble(response.output, 'agent');
         }
-
-        if (response.isDone) {
-            state.phase = 'done';
-        }
-
-        saveState();
-        updateUI();
 
     } catch (err) {
         console.error(err);
@@ -348,22 +351,22 @@ function bindEvents() {
         callAgent('SET_WORDS', txt);
     });
 
-    // NEW: Handle "Change Words" / Reset (Now in sidebar)
+    // 2. Reset Words
     const btnChangeWords = document.getElementById('btnChangeWords');
     if (btnChangeWords) {
         btnChangeWords.addEventListener('click', () => {
-            // 1. Clear words
             state.words = [];
-            // 2. Clear feedback
-            const feedbackEl = document.getElementById('setupFeedback');
-            if(feedbackEl) {
-                feedbackEl.textContent = '';
-                feedbackEl.classList.add('hidden');
-            }
-            // 3. Reset phase
             state.phase = 'setup';
-            // 4. Clear Input
+
+            // Clear inputs and feedbacks
             document.getElementById('wordsInput').value = '';
+            ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.textContent = '';
+                    el.classList.add('hidden');
+                }
+            });
 
             saveState();
             updateUI();
@@ -371,7 +374,7 @@ function bindEvents() {
     }
 
 
-    // 2. Start Training (EN -> Target)
+    // 3. Start Training (EN -> Target)
     document.getElementById('modeEnToTarget').addEventListener('click', () => {
         state.phase = 'training';
         state.trainingMode = 'EN_TO_TARGET';
@@ -381,7 +384,7 @@ function bindEvents() {
         callAgent('EN_TO_TARGET_TRAINING', '');
     });
 
-    // 2. Start Training (Target -> EN)
+    // 4. Start Training (Target -> EN)
     document.getElementById('modeTargetToEn').addEventListener('click', () => {
         state.phase = 'training';
         state.trainingMode = 'TARGET_TO_EN';
@@ -391,7 +394,7 @@ function bindEvents() {
         callAgent('TARGET_TO_EN_TRAINING', '');
     });
 
-    // 3. Chat Send
+    // 5. Chat Send
     const handleChatSend = () => {
         const input = document.getElementById('chatInput');
         const txt = input.value.trim();
@@ -410,19 +413,19 @@ function bindEvents() {
         if (e.key === 'Enter') handleChatSend();
     });
 
-    // 4. Feedback
+    // 6. Feedback / Train Again
     document.getElementById('btnFeedback').addEventListener('click', () => {
         callAgent('FEEDBACK', '');
-        // Hide feedback button to prevent double click? Or just append to chat.
     });
 
-    // 5. Train Again
     document.getElementById('btnTrainAgain').addEventListener('click', () => {
-        // Return to mode select
-        state.phase = 'setup'; // Actually 'setup' with words renders mode select
-        // Technically we are skipping the "paste" part because words exist.
-        // But logic in updateUI handles: if phase=setup && words.length > 0 -> show Mode Select.
+        state.phase = 'setup'; // Logic in updateUI will show Mode Select because words exist
         resetTranscript();
+
+        // Hide feedback when restarting
+        const el = document.getElementById('modeSelectFeedback');
+        if(el) el.classList.add('hidden');
+
         saveState();
         updateUI();
     });
