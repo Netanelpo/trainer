@@ -1,7 +1,7 @@
 /**
  * APP CONFIGURATION
  */
-const AGENT_ENDPOINT = '/api/agent'; // Configurable proxy endpoint
+const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
 const LOCAL_STORAGE_KEY = 'polyglot_state';
 
 // Localization Dictionary
@@ -119,7 +119,7 @@ const defaultState = {
     trainingMode: null, // 'EN_TO_TARGET', 'TARGET_TO_EN'
 };
 
-let state = { ...defaultState };
+let state = {...defaultState};
 
 function loadState() {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -199,7 +199,7 @@ function addChatBubble(text, sender) {
 }
 
 function showLoading(isLoading) {
-    if(isLoading) {
+    if (isLoading) {
         document.body.style.cursor = 'wait';
     } else {
         document.body.style.cursor = 'default';
@@ -221,25 +221,29 @@ function showError(msg) {
  * API INTERACTION
  */
 async function callAgent(action, inputVal = "") {
+    console.info('[callAgent]', {action, inputVal});
     showLoading(true);
     showError(null);
+
 
     const payload = {
         input: inputVal,
         action: action,
+        language: state.language,
         context: {
             ...state.context,
-            language: state.language,
             words: state.words
         }
     };
 
+    console.info('[before]');
     try {
         const res = await fetch(AGENT_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload),
         });
+        console.info('[after]');
 
         const response = await res.json();
         if (!res.ok) {
