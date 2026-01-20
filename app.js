@@ -271,6 +271,7 @@ async function callAgent(action, inputVal = "") {
         input: inputVal,
         action: action,
         language: state.language,
+        words: state.words,
     };
 
     try {

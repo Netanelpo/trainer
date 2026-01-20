@@ -47,6 +47,7 @@ test.describe('Training tests', () => {
             action: 'EN_TO_TARGET_TRAINING',
             input: '',
             language: 'Hebrew',
+            words: ['apple', 'run', 'beautiful'],
         });
     });
 

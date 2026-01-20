@@ -50,7 +50,7 @@ test.describe('Integration tests', () => {
             localStorage.setItem('polyglot_state', JSON.stringify(st));
         }, {
             language: 'Hebrew',
-            words: [ 'apple', 'run', 'beautiful' ],
+            words: ['apple', 'run', 'beautiful'],
             phase: 'setup',
             trainingMode: null
         });
@@ -68,5 +68,23 @@ test.describe('Integration tests', () => {
 
         const data = await res.json();
         console.log('API response:', data);
+
+        // UI switches to training
+        await expect(page.locator('#modeSelectPhase')).toBeHidden();
+        await expect(page.locator('#trainingPhase')).toBeVisible();
+
+        // Agent output should appear in chat transcript (training output goes to chat)
+        // Use contain to avoid issues with punctuation/whitespace (real API can vary slightly)
+        await expect(page.locator('#chatTranscript .chat-bubble.agent').last())
+            .toContainText((data.output || '').trim(), { timeout: 15000 });
+
+        const st = await page.evaluate(() => JSON.parse(localStorage.getItem('polyglot_state')));
+        console.info('State:', st);
+        expect(st).toStrictEqual({
+            language: 'Hebrew',
+            words: [ 'apple', 'run', 'beautiful' ],
+            phase: 'training',
+            trainingMode: 'EN_TO_TARGET'
+        });
     });
 });
