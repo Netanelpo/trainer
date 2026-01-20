@@ -117,6 +117,13 @@ select {
     background: #f9fafb;
 }
 
+/* NEW: Panel Footer for the Reset Button */
+.panel-footer {
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+    background: #f9fafb;
+}
+
 .badge {
     background: var(--primary-color);
     color: white;
@@ -297,6 +304,43 @@ button {
     justify-content: center;
 }
 
+
+
+/* Feedback Area */
+.chat-preview {
+    background-color: #e0e7ff; /* Light indigo */
+    color: #3730a3;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    border: 1px solid #c7d2fe;
+    font-style: italic;
+    text-align: center;
+}
+/* Ensure it is hidden if empty */
+.chat-preview:empty {
+    display: none;
+}
+
+/* FIX: Updated Reset Button Style */
+.btn-reset {
+    width: 100%;
+    background: white;
+    border: 1px solid #ef4444;
+    color: #b91c1c;
+    font-weight: 600;
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.btn-reset:hover {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .app-container {
@@ -305,7 +349,7 @@ button {
     }
 
     .words-panel {
-        max-height: 200px; /* Collapsed view for words on mobile */
+        max-height: 250px; /* Collapsed view for words on mobile */
     }
 
     textarea {

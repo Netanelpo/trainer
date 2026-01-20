@@ -9,9 +9,9 @@ const I18N = {
     'Hebrew': {
         dir: 'rtl',
         appTitle: 'מאמן שפות',
-        learnedWords: 'מילים שנלמדו',
+        learnedWords: 'מילים ללמידה',
         noWordsYet: 'עדיין לא נוספו מילים',
-        pasteWordsTitle: 'הדבק את המילים שלמדת',
+        pasteWordsTitle: 'הדבק את המילים ללמידה',
         pasteWordsHelper: 'הפרד מילים עם פסיקים או שורות חדשות',
         btnSendWords: 'שלח מילים',
         startTrainingTitle: 'התחל אימון',
@@ -21,6 +21,8 @@ const I18N = {
         whatNext: 'מה ברצונך לעשות?',
         btnGetFeedback: 'קבל משוב',
         btnTrainAgain: 'התאמן שוב',
+        btnChangeWords: 'אפס רשימת מילים',
+
         labelLoading: 'טוען...',
         errorNetwork: 'שגיאת תקשורת. אנא נסה שנית.',
         wordCount: 'מילים',
@@ -29,9 +31,9 @@ const I18N = {
     'Russian': {
         dir: 'ltr',
         appTitle: 'Языковой Тренажер',
-        learnedWords: 'Изученные слова',
+        learnedWords: 'Изучаемые слова',
         noWordsYet: 'Слова еще не добавлены',
-        pasteWordsTitle: 'Вставьте изученные слова',
+        pasteWordsTitle: 'Вставьте изучаемые слова',
         pasteWordsHelper: 'Разделяйте слова запятыми или новыми строками',
         btnSendWords: 'Отправить слова',
         startTrainingTitle: 'Начать тренировку',
@@ -41,6 +43,8 @@ const I18N = {
         whatNext: 'Что делать дальше?',
         btnGetFeedback: 'Получить отзыв',
         btnTrainAgain: 'Тренироваться снова',
+        btnChangeWords: 'Сбросить слова',
+
         labelLoading: 'Загрузка...',
         errorNetwork: 'Ошибка сети. Попробуйте еще раз.',
         wordCount: 'слов',
@@ -49,9 +53,9 @@ const I18N = {
     'Ukrainian': {
         dir: 'ltr',
         appTitle: 'Мовний Тренажер',
-        learnedWords: 'Вивчені слова',
+        learnedWords: 'Слова для вивчення',
         noWordsYet: 'Слова ще не додані',
-        pasteWordsTitle: 'Вставте вивчені слова',
+        pasteWordsTitle: 'Вставте слова для вивчення',
         pasteWordsHelper: 'Розділяйте слова комами або новими рядками',
         btnSendWords: 'Надіслати слова',
         startTrainingTitle: 'Почати тренування',
@@ -61,6 +65,8 @@ const I18N = {
         whatNext: 'Що робити далі?',
         btnGetFeedback: 'Отримати відгук',
         btnTrainAgain: 'Тренуватися знову',
+        btnChangeWords: 'Скинути слова',
+
         labelLoading: 'Завантаження...',
         errorNetwork: 'Помилка мережі. Спробуйте ще раз.',
         wordCount: 'слів',
@@ -69,9 +75,9 @@ const I18N = {
     'Spanish': {
         dir: 'ltr',
         appTitle: 'Entrenador de Idiomas',
-        learnedWords: 'Palabras aprendidas',
-        noWordsYet: 'No hay palabras añadidas',
-        pasteWordsTitle: 'Pega tus palabras aprendidas',
+        learnedWords: 'Palabras para aprender',
+        noWordsYet: 'Aún no se han añadido palabras',
+        pasteWordsTitle: 'Pega las palabras para aprender',
         pasteWordsHelper: 'Separa las palabras con comas o nuevas líneas',
         btnSendWords: 'Enviar palabras',
         startTrainingTitle: 'Empezar entrenamiento',
@@ -81,6 +87,8 @@ const I18N = {
         whatNext: '¿Qué te gustaría hacer?',
         btnGetFeedback: 'Obtener feedback',
         btnTrainAgain: 'Entrenar de nuevo',
+        btnChangeWords: 'Reiniciar palabras',
+
         labelLoading: 'Cargando...',
         errorNetwork: 'Error de red. Inténtalo de nuevo.',
         wordCount: 'palabras',
@@ -89,9 +97,9 @@ const I18N = {
     'French': {
         dir: 'ltr',
         appTitle: 'Entraîneur de Langue',
-        learnedWords: 'Mots appris',
+        learnedWords: 'Mots à apprendre',
         noWordsYet: 'Aucun mot ajouté',
-        pasteWordsTitle: 'Collez vos mots appris',
+        pasteWordsTitle: 'Collez les mots à apprendre',
         pasteWordsHelper: 'Séparez les mots par des virgules ou des nouvelles lignes',
         btnSendWords: 'Envoyer les mots',
         startTrainingTitle: 'Commencer l\'entraînement',
@@ -101,6 +109,8 @@ const I18N = {
         whatNext: 'Que souhaitez-vous faire ?',
         btnGetFeedback: 'Obtenir un retour',
         btnTrainAgain: 'S\'entraîner à nouveau',
+        btnChangeWords: 'Réinitialiser les mots',
+
         labelLoading: 'Chargement...',
         errorNetwork: 'Erreur réseau. Veuillez réessayer.',
         wordCount: 'mots',
@@ -162,10 +172,14 @@ function updateUI() {
 
     // 4. Words List rendering
     const wordsList = document.getElementById('wordsList');
+    const wordsPanelFooter = document.getElementById('wordsPanelFooter');
+
     if (state.words.length > 0) {
         wordsList.innerHTML = state.words.map(w => `<span class="word-chip">${w}</span>`).join('');
+        wordsPanelFooter.classList.remove('hidden'); // Show reset button if words exist
     } else {
         wordsList.innerHTML = `<p class="empty-state">${langData.noWordsYet}</p>`;
+        wordsPanelFooter.classList.add('hidden'); // Hide reset button if no words
     }
 
     // 5. Phase Visibility
@@ -198,10 +212,35 @@ function addChatBubble(text, sender) {
 }
 
 function showLoading(isLoading) {
+    const buttons = document.querySelectorAll('button');
+
     if (isLoading) {
         document.body.style.cursor = 'wait';
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            // Optional: Store original text to restore later if needed,
+            // but simplified here for generic loading state
+            btn.dataset.originalText = btn.textContent;
+            btn.style.opacity = '0.7';
+        });
+
+        // specific feedback for the send button if it's the active context
+        const sendWordsBtn = document.getElementById('sendWordsBtn');
+        if (state.phase === 'setup') {
+            sendWordsBtn.textContent = I18N[state.language].labelLoading || '...';
+        }
+
     } else {
         document.body.style.cursor = 'default';
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            // Restore text if we changed it
+            if (btn.id === 'sendWordsBtn') {
+                // Force updateUI to reset text via I18N, or reset manually:
+                updateUI();
+            }
+        });
     }
 }
 
@@ -224,6 +263,12 @@ async function callAgent(action, inputVal = "") {
     showLoading(true);
     showError(null);
 
+    // Clear previous feedback when starting a new call
+    const feedbackEl = document.getElementById('setupFeedback');
+    if (feedbackEl) {
+        feedbackEl.classList.add('hidden');
+        feedbackEl.textContent = '';
+    }
 
     const payload = {
         input: inputVal,
@@ -255,11 +300,17 @@ async function callAgent(action, inputVal = "") {
 
         // UI Logic based on Action & Response
         if (action === 'SET_WORDS') {
-            state.phase = 'setup'; // stays in setup until mode clicked, but now words exist
-            // Use the output as a preview in the mode select screen if desired,
-            // or just show it in the chat area if we were already chatting.
-            // For this UX, we show the words list on left and enable mode buttons.
-            document.getElementById('setupFeedback').textContent = response.output;
+            state.phase = 'setup'; // stays in setup until words confirmed and updateUI runs
+
+            // FIX: If we have output but NO words extracted (or even if we do), show the output.
+            // If words were found, updateUI will switch screens.
+            // If words were NOT found, we stay on setup, so we need to show the feedback there.
+            if (response.output) {
+                if (feedbackEl) {
+                    feedbackEl.textContent = response.output;
+                    feedbackEl.classList.remove('hidden');
+                }
+            }
         } else if (response.output) {
             addChatBubble(response.output, 'agent');
         }
@@ -296,6 +347,29 @@ function bindEvents() {
         if (!txt.trim()) return;
         callAgent('SET_WORDS', txt);
     });
+
+    // NEW: Handle "Change Words" / Reset (Now in sidebar)
+    const btnChangeWords = document.getElementById('btnChangeWords');
+    if (btnChangeWords) {
+        btnChangeWords.addEventListener('click', () => {
+            // 1. Clear words
+            state.words = [];
+            // 2. Clear feedback
+            const feedbackEl = document.getElementById('setupFeedback');
+            if(feedbackEl) {
+                feedbackEl.textContent = '';
+                feedbackEl.classList.add('hidden');
+            }
+            // 3. Reset phase
+            state.phase = 'setup';
+            // 4. Clear Input
+            document.getElementById('wordsInput').value = '';
+
+            saveState();
+            updateUI();
+        });
+    }
+
 
     // 2. Start Training (EN -> Target)
     document.getElementById('modeEnToTarget').addEventListener('click', () => {
