@@ -26,7 +26,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
-        run: npx playwright test -c playwright.config.ts
+        run: npx playwright test -c playwright.config.js
 
       - name: Upload Playwright report
         if: always()
