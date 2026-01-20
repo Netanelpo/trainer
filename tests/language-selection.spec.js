@@ -9,7 +9,6 @@ function stateWith(overrides = {}) {
     return {
         language: 'Hebrew',
         words: [],
-        context: {},
         phase: 'setup',
         trainingMode: null,
         ...overrides,
@@ -48,7 +47,7 @@ test.describe('Language selection', () => {
         await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 
         await expect(page.locator('h1[data-i18n="appTitle"]')).toHaveText('Языковой Тренажер');
-        await expect(page.locator('h2[data-i18n="pasteWordsTitle"]')).toHaveText('Вставьте изученные слова');
+        await expect(page.locator('h2[data-i18n="pasteWordsTitle"]')).toHaveText('Вставьте изучаемые слова');
         await expect(page.locator('button[data-i18n="btnSendWords"]')).toHaveText('Отправить слова');
     });
 

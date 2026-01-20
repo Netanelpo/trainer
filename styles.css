@@ -35,6 +35,7 @@ body {
     border-bottom: 1px solid var(--border-color);
     padding: 1rem;
     box-shadow: var(--shadow);
+    flex-shrink: 0;
 }
 
 .header-content {
@@ -44,12 +45,6 @@ body {
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 1rem;
-}
-
-.header-controls {
-    display: flex;
-    align-items: center;
     gap: 1rem;
 }
 
@@ -106,6 +101,7 @@ select {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    height: 100%;
 }
 
 .panel-header {
@@ -115,6 +111,18 @@ select {
     justify-content: space-between;
     align-items: center;
     background: #f9fafb;
+    flex-shrink: 0;
+}
+
+/* FIX 1: Sidebar Content Layout
+   The content area now scrolls as one unit, containing both list and button
+*/
+.sidebar-content {
+    padding: 1rem;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .badge {
@@ -127,10 +135,8 @@ select {
 }
 
 /* Words List */
-.words-list-content {
-    padding: 1rem;
-    overflow-y: auto;
-    flex: 1;
+.words-list-container {
+    margin-bottom: 1rem;
 }
 
 .word-chip {
@@ -155,6 +161,7 @@ select {
     flex: 1;
     display: flex;
     flex-direction: column;
+    overflow-y: auto;
 }
 
 .hidden {
@@ -164,7 +171,7 @@ select {
 /* Setup Phase */
 textarea {
     width: 100%;
-    flex: 1; /* Grow to fill space */
+    flex: 1;
     min-height: 200px;
     margin: 1rem 0;
     padding: 1rem;
@@ -183,7 +190,7 @@ textarea {
     flex-direction: column;
     gap: 1rem;
     background: #fff;
-    border: 1px solid var(--border-color); /* Inner border for clarity */
+    border: 1px solid var(--border-color);
     border-radius: var(--radius);
     margin-bottom: 1rem;
 }
@@ -203,7 +210,6 @@ textarea {
     border-bottom-left-radius: 0;
 }
 
-/* RTL Adjustments for bubbles */
 [dir="rtl"] .chat-bubble.agent {
     border-bottom-left-radius: 1rem;
     border-bottom-right-radius: 0;
@@ -225,6 +231,7 @@ textarea {
     display: flex;
     gap: 0.5rem;
     padding-top: 0.5rem;
+    flex-shrink: 0;
 }
 
 .chat-input-area input {
@@ -297,6 +304,41 @@ button {
     justify-content: center;
 }
 
+/* Feedback Area (Used in Setup and Mode Select) */
+.chat-preview {
+    background-color: #e0e7ff; /* Light indigo */
+    color: #3730a3;
+    padding: 1rem;
+    border-radius: var(--radius);
+    margin-bottom: 1rem;
+    border: 1px solid #c7d2fe;
+    font-style: italic;
+    text-align: center;
+    white-space: pre-wrap; /* Ensure newlines in messages render nicely */
+}
+.chat-preview:empty {
+    display: none;
+}
+
+/* Reset Button Style */
+.btn-reset {
+    width: 100%;
+    background: white;
+    border: 1px solid #ef4444;
+    color: #b91c1c;
+    font-weight: 600;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+    text-align: center;
+    transition: all 0.2s;
+    margin-top: 0.5rem; /* Small spacing from the list */
+}
+
+.btn-reset:hover {
+    background: #fee2e2;
+    color: #7f1d1d;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .app-container {
@@ -305,7 +347,8 @@ button {
     }
 
     .words-panel {
-        max-height: 200px; /* Collapsed view for words on mobile */
+        max-height: 250px;
+        flex-shrink: 0;
     }
 
     textarea {

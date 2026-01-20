@@ -1,7 +1,7 @@
 /**
  * APP CONFIGURATION
  */
-const AGENT_ENDPOINT = '/api/agent'; // Configurable proxy endpoint
+const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
 const LOCAL_STORAGE_KEY = 'polyglot_state';
 
 // Localization Dictionary
@@ -9,9 +9,9 @@ const I18N = {
     'Hebrew': {
         dir: 'rtl',
         appTitle: 'מאמן שפות',
-        learnedWords: 'מילים שנלמדו',
+        learnedWords: 'מילים ללמידה',
         noWordsYet: 'עדיין לא נוספו מילים',
-        pasteWordsTitle: 'הדבק את המילים שלמדת',
+        pasteWordsTitle: 'הדבק את המילים ללמידה',
         pasteWordsHelper: 'הפרד מילים עם פסיקים או שורות חדשות',
         btnSendWords: 'שלח מילים',
         startTrainingTitle: 'התחל אימון',
@@ -21,6 +21,8 @@ const I18N = {
         whatNext: 'מה ברצונך לעשות?',
         btnGetFeedback: 'קבל משוב',
         btnTrainAgain: 'התאמן שוב',
+        btnChangeWords: 'אפס רשימת מילים',
+
         labelLoading: 'טוען...',
         errorNetwork: 'שגיאת תקשורת. אנא נסה שנית.',
         wordCount: 'מילים',
@@ -29,9 +31,9 @@ const I18N = {
     'Russian': {
         dir: 'ltr',
         appTitle: 'Языковой Тренажер',
-        learnedWords: 'Изученные слова',
+        learnedWords: 'Изучаемые слова',
         noWordsYet: 'Слова еще не добавлены',
-        pasteWordsTitle: 'Вставьте изученные слова',
+        pasteWordsTitle: 'Вставьте изучаемые слова',
         pasteWordsHelper: 'Разделяйте слова запятыми или новыми строками',
         btnSendWords: 'Отправить слова',
         startTrainingTitle: 'Начать тренировку',
@@ -41,6 +43,8 @@ const I18N = {
         whatNext: 'Что делать дальше?',
         btnGetFeedback: 'Получить отзыв',
         btnTrainAgain: 'Тренироваться снова',
+        btnChangeWords: 'Сбросить слова',
+
         labelLoading: 'Загрузка...',
         errorNetwork: 'Ошибка сети. Попробуйте еще раз.',
         wordCount: 'слов',
@@ -49,9 +53,9 @@ const I18N = {
     'Ukrainian': {
         dir: 'ltr',
         appTitle: 'Мовний Тренажер',
-        learnedWords: 'Вивчені слова',
+        learnedWords: 'Слова для вивчення',
         noWordsYet: 'Слова ще не додані',
-        pasteWordsTitle: 'Вставте вивчені слова',
+        pasteWordsTitle: 'Вставте слова для вивчення',
         pasteWordsHelper: 'Розділяйте слова комами або новими рядками',
         btnSendWords: 'Надіслати слова',
         startTrainingTitle: 'Почати тренування',
@@ -61,6 +65,8 @@ const I18N = {
         whatNext: 'Що робити далі?',
         btnGetFeedback: 'Отримати відгук',
         btnTrainAgain: 'Тренуватися знову',
+        btnChangeWords: 'Скинути слова',
+
         labelLoading: 'Завантаження...',
         errorNetwork: 'Помилка мережі. Спробуйте ще раз.',
         wordCount: 'слів',
@@ -69,9 +75,9 @@ const I18N = {
     'Spanish': {
         dir: 'ltr',
         appTitle: 'Entrenador de Idiomas',
-        learnedWords: 'Palabras aprendidas',
-        noWordsYet: 'No hay palabras añadidas',
-        pasteWordsTitle: 'Pega tus palabras aprendidas',
+        learnedWords: 'Palabras para aprender',
+        noWordsYet: 'Aún no se han añadido palabras',
+        pasteWordsTitle: 'Pega las palabras para aprender',
         pasteWordsHelper: 'Separa las palabras con comas o nuevas líneas',
         btnSendWords: 'Enviar palabras',
         startTrainingTitle: 'Empezar entrenamiento',
@@ -81,6 +87,8 @@ const I18N = {
         whatNext: '¿Qué te gustaría hacer?',
         btnGetFeedback: 'Obtener feedback',
         btnTrainAgain: 'Entrenar de nuevo',
+        btnChangeWords: 'Reiniciar palabras',
+
         labelLoading: 'Cargando...',
         errorNetwork: 'Error de red. Inténtalo de nuevo.',
         wordCount: 'palabras',
@@ -89,9 +97,9 @@ const I18N = {
     'French': {
         dir: 'ltr',
         appTitle: 'Entraîneur de Langue',
-        learnedWords: 'Mots appris',
+        learnedWords: 'Mots à apprendre',
         noWordsYet: 'Aucun mot ajouté',
-        pasteWordsTitle: 'Collez vos mots appris',
+        pasteWordsTitle: 'Collez les mots à apprendre',
         pasteWordsHelper: 'Séparez les mots par des virgules ou des nouvelles lignes',
         btnSendWords: 'Envoyer les mots',
         startTrainingTitle: 'Commencer l\'entraînement',
@@ -101,6 +109,8 @@ const I18N = {
         whatNext: 'Que souhaitez-vous faire ?',
         btnGetFeedback: 'Obtenir un retour',
         btnTrainAgain: 'S\'entraîner à nouveau',
+        btnChangeWords: 'Réinitialiser les mots',
+
         labelLoading: 'Chargement...',
         errorNetwork: 'Erreur réseau. Veuillez réessayer.',
         wordCount: 'mots',
@@ -114,12 +124,11 @@ const I18N = {
 const defaultState = {
     language: 'Hebrew',
     words: [],
-    context: {},
     phase: 'setup', // 'setup', 'training', 'done'
     trainingMode: null, // 'EN_TO_TARGET', 'TARGET_TO_EN'
 };
 
-let state = { ...defaultState };
+let state = {...defaultState};
 
 function loadState() {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEY);
@@ -134,7 +143,6 @@ function saveState() {
 }
 
 function resetTranscript() {
-    // Only resets UI, doesn't affect persistable state logic directly unless needed
     document.getElementById('chatTranscript').innerHTML = '';
 }
 
@@ -146,7 +154,7 @@ function updateUI() {
 
     // 1. Direction and Globals
     document.documentElement.setAttribute('dir', langData.dir);
-    document.documentElement.lang = state.language === 'Hebrew' ? 'he' : 'en'; // Simple fallback
+    document.documentElement.lang = state.language === 'Hebrew' ? 'he' : 'en';
 
     // 2. Text Content Localization
     document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -163,10 +171,14 @@ function updateUI() {
 
     // 4. Words List rendering
     const wordsList = document.getElementById('wordsList');
+    const btnChangeWords = document.getElementById('btnChangeWords');
+
     if (state.words.length > 0) {
         wordsList.innerHTML = state.words.map(w => `<span class="word-chip">${w}</span>`).join('');
+        btnChangeWords.classList.remove('hidden'); // Show button right after words
     } else {
         wordsList.innerHTML = `<p class="empty-state">${langData.noWordsYet}</p>`;
+        btnChangeWords.classList.add('hidden');
     }
 
     // 5. Phase Visibility
@@ -185,7 +197,7 @@ function updateUI() {
         document.getElementById('trainingPhase').classList.remove('hidden');
     } else if (state.phase === 'done') {
         document.getElementById('donePhase').classList.remove('hidden');
-        document.getElementById('trainingPhase').classList.remove('hidden'); // Keep chat visible in background/above
+        document.getElementById('trainingPhase').classList.remove('hidden');
     }
 }
 
@@ -199,10 +211,32 @@ function addChatBubble(text, sender) {
 }
 
 function showLoading(isLoading) {
-    if(isLoading) {
+    const buttons = document.querySelectorAll('button');
+
+    if (isLoading) {
         document.body.style.cursor = 'wait';
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.dataset.originalText = btn.textContent;
+            btn.style.opacity = '0.7';
+        });
+
+        // specific feedback for the send button if it's the active context
+        const sendWordsBtn = document.getElementById('sendWordsBtn');
+        if (state.phase === 'setup') {
+            sendWordsBtn.textContent = I18N[state.language].labelLoading || '...';
+        }
+
     } else {
         document.body.style.cursor = 'default';
+        buttons.forEach(btn => {
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            // Restore text via I18N updates in updateUI to ensure correct lang
+            if (btn.id === 'sendWordsBtn') {
+                updateUI();
+            }
+        });
     }
 }
 
@@ -224,20 +258,26 @@ async function callAgent(action, inputVal = "") {
     showLoading(true);
     showError(null);
 
+    // Clear previous feedbacks
+    ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.classList.add('hidden');
+            el.textContent = '';
+        }
+    });
+
     const payload = {
         input: inputVal,
         action: action,
-        context: {
-            ...state.context,
-            language: state.language,
-            words: state.words
-        }
+        language: state.language,
+        words: state.words,
     };
 
     try {
         const res = await fetch(AGENT_ENDPOINT, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload),
         });
 
@@ -255,27 +295,36 @@ async function callAgent(action, inputVal = "") {
         if (response.words) {
             state.words = response.words;
         }
-        if (response.context) {
-            state.context = response.context;
-        }
-
-        // UI Logic based on Action & Response
-        if (action === 'SET_WORDS') {
-            state.phase = 'setup'; // stays in setup until mode clicked, but now words exist
-            // Use the output as a preview in the mode select screen if desired,
-            // or just show it in the chat area if we were already chatting.
-            // For this UX, we show the words list on left and enable mode buttons.
-            document.getElementById('setupFeedback').textContent = response.output;
-        } else if (response.output) {
-            addChatBubble(response.output, 'agent');
-        }
 
         if (response.isDone) {
             state.phase = 'done';
         }
 
+        // Save and Update UI *before* showing output messages so the correct screen is visible
         saveState();
         updateUI();
+
+        // FIX 2: Handle output message visibility depending on resulting phase
+        if (action === 'SET_WORDS' && response.output) {
+            if (state.words.length > 0) {
+                // We successfully got words, now on Mode Select screen
+                const feedbackEl = document.getElementById('modeSelectFeedback');
+                if (feedbackEl) {
+                    feedbackEl.textContent = response.output;
+                    feedbackEl.classList.remove('hidden');
+                }
+            } else {
+                // Failed to get words, still on Setup screen
+                const feedbackEl = document.getElementById('setupFeedback');
+                if (feedbackEl) {
+                    feedbackEl.textContent = response.output;
+                    feedbackEl.classList.remove('hidden');
+                }
+            }
+        } else if (response.output) {
+            // Normal chat response
+            addChatBubble(response.output, 'agent');
+        }
 
     } catch (err) {
         console.error(err);
@@ -303,7 +352,30 @@ function bindEvents() {
         callAgent('SET_WORDS', txt);
     });
 
-    // 2. Start Training (EN -> Target)
+    // 2. Reset Words
+    const btnChangeWords = document.getElementById('btnChangeWords');
+    if (btnChangeWords) {
+        btnChangeWords.addEventListener('click', () => {
+            state.words = [];
+            state.phase = 'setup';
+
+            // Clear inputs and feedbacks
+            document.getElementById('wordsInput').value = '';
+            ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.textContent = '';
+                    el.classList.add('hidden');
+                }
+            });
+
+            saveState();
+            updateUI();
+        });
+    }
+
+
+    // 3. Start Training (EN -> Target)
     document.getElementById('modeEnToTarget').addEventListener('click', () => {
         state.phase = 'training';
         state.trainingMode = 'EN_TO_TARGET';
@@ -313,7 +385,7 @@ function bindEvents() {
         callAgent('EN_TO_TARGET_TRAINING', '');
     });
 
-    // 2. Start Training (Target -> EN)
+    // 4. Start Training (Target -> EN)
     document.getElementById('modeTargetToEn').addEventListener('click', () => {
         state.phase = 'training';
         state.trainingMode = 'TARGET_TO_EN';
@@ -323,7 +395,7 @@ function bindEvents() {
         callAgent('TARGET_TO_EN_TRAINING', '');
     });
 
-    // 3. Chat Send
+    // 5. Chat Send
     const handleChatSend = () => {
         const input = document.getElementById('chatInput');
         const txt = input.value.trim();
@@ -342,20 +414,19 @@ function bindEvents() {
         if (e.key === 'Enter') handleChatSend();
     });
 
-    // 4. Feedback
+    // 6. Feedback / Train Again
     document.getElementById('btnFeedback').addEventListener('click', () => {
         callAgent('FEEDBACK', '');
-        // Hide feedback button to prevent double click? Or just append to chat.
     });
 
-    // 5. Train Again
     document.getElementById('btnTrainAgain').addEventListener('click', () => {
-        // Return to mode select
-        state.phase = 'setup'; // Actually 'setup' with words renders mode select
-        // Technically we are skipping the "paste" part because words exist.
-        // But logic in updateUI handles: if phase=setup && words.length > 0 -> show Mode Select.
-        state.context = {}; // clear context for new run
+        state.phase = 'setup'; // Logic in updateUI will show Mode Select because words exist
         resetTranscript();
+
+        // Hide feedback when restarting
+        const el = document.getElementById('modeSelectFeedback');
+        if(el) el.classList.add('hidden');
+
         saveState();
         updateUI();
     });

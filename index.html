@@ -31,8 +31,15 @@
             <h2 data-i18n="learnedWords">Learned Words</h2>
             <span id="wordCount" class="badge">0</span>
         </div>
-        <div id="wordsList" class="words-list-content">
-            <p class="empty-state" data-i18n="noWordsYet">No words added yet.</p>
+
+        <div class="sidebar-content">
+            <div id="wordsList" class="words-list-container">
+                <p class="empty-state" data-i18n="noWordsYet">No words added yet.</p>
+            </div>
+
+            <button id="btnChangeWords" class="btn-reset hidden" data-i18n="btnChangeWords">
+                Change Words (Reset)
+            </button>
         </div>
     </aside>
 
@@ -40,6 +47,9 @@
 
         <div id="setupPhase" class="phase-container">
             <h2 data-i18n="pasteWordsTitle">Paste your learned words</h2>
+
+            <div class="chat-preview hidden" id="setupFeedback"></div>
+
             <p class="helper-text" data-i18n="pasteWordsHelper">Separate words with commas or new lines.</p>
             <textarea id="wordsInput" placeholder="e.g. apple, run, beautiful..."></textarea>
             <button id="sendWordsBtn" class="btn-primary" data-i18n="btnSendWords">Send Words</button>
@@ -47,6 +57,9 @@
 
         <div id="modeSelectPhase" class="phase-container hidden">
             <h2 data-i18n="startTrainingTitle">Start Training</h2>
+
+            <div class="chat-preview hidden" id="modeSelectFeedback"></div>
+
             <p class="helper-text" data-i18n="chooseDirection">Choose your training direction:</p>
             <div class="mode-buttons">
                 <button id="modeEnToTarget" class="btn-mode">
@@ -56,7 +69,6 @@
                     <span class="target-lang-name">Target</span> &rarr; English
                 </button>
             </div>
-            <div class="chat-preview" id="setupFeedback"></div>
         </div>
 
         <div id="trainingPhase" class="phase-container hidden">
