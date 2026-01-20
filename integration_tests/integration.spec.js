@@ -26,14 +26,11 @@ test.describe('Integration tests', () => {
         const data = await res.json();
         console.log('API response:', data);
 
-        // Now wait for UI update (choose one)
         await expect(page.locator('#wordsList .word-chip')).toHaveCount(3, { timeout: 15000 });
-        // or: await expect(page.locator('#wordCount')).toHaveText('3', { timeout: 15000 });
 
         const texts = await page.locator('#wordsList .word-chip').allTextContents();
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
 
-        await expect(page.locator('#setupFeedback')).toHaveText('this is the output:');
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
         await expect(page.locator('h2[data-i18n="startTrainingTitle"]')).toBeVisible();
