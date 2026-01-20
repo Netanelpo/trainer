@@ -65,9 +65,6 @@ test.describe('Word selection (Set Words) — tests', () => {
             input: 'apple, run, beautiful',
             action: 'SET_WORDS',
             language: 'Hebrew',
-            context: {
-                words: [],
-            },
         });
     });
 
@@ -81,7 +78,6 @@ test.describe('Word selection (Set Words) — tests', () => {
                 body: JSON.stringify({
                     output: 'this is the output:',
                     words: ['apple', 'run', 'beautiful'],
-                    context: {},
                 }),
             });
         });

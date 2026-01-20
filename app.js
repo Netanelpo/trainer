@@ -114,7 +114,6 @@ const I18N = {
 const defaultState = {
     language: 'Hebrew',
     words: [],
-    context: {},
     phase: 'setup', // 'setup', 'training', 'done'
     trainingMode: null, // 'EN_TO_TARGET', 'TARGET_TO_EN'
 };
@@ -230,20 +229,14 @@ async function callAgent(action, inputVal = "") {
         input: inputVal,
         action: action,
         language: state.language,
-        context: {
-            ...state.context,
-            words: state.words
-        }
     };
 
-    console.info('[before]');
     try {
         const res = await fetch(AGENT_ENDPOINT, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(payload),
         });
-        console.info('[after]');
 
         const response = await res.json();
         if (!res.ok) {
@@ -258,9 +251,6 @@ async function callAgent(action, inputVal = "") {
         // Handle Response
         if (response.words) {
             state.words = response.words;
-        }
-        if (response.context) {
-            state.context = response.context;
         }
 
         // UI Logic based on Action & Response
@@ -358,7 +348,6 @@ function bindEvents() {
         state.phase = 'setup'; // Actually 'setup' with words renders mode select
         // Technically we are skipping the "paste" part because words exist.
         // But logic in updateUI handles: if phase=setup && words.length > 0 -> show Mode Select.
-        state.context = {}; // clear context for new run
         resetTranscript();
         saveState();
         updateUI();

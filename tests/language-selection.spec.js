@@ -9,7 +9,6 @@ function stateWith(overrides = {}) {
     return {
         language: 'Hebrew',
         words: [],
-        context: {},
         phase: 'setup',
         trainingMode: null,
         ...overrides,
