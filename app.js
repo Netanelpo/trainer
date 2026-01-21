@@ -273,7 +273,7 @@ async function callAgent(action, inputVal = "") {
         action: action,
         language: state.language,
         words: state.words,
-        // next_word: state.nextWord,
+        next_word: state.nextWord,
     };
 
     try {
@@ -298,9 +298,9 @@ async function callAgent(action, inputVal = "") {
             state.words = response.words;
         }
 
-        // if (response.next_word) {
-        //     state.nextWord = response.next_word;
-        // }
+        if (response.next_word) {
+            state.nextWord = response.next_word;
+        }
 
         // Save and Update UI *before* showing output messages so the correct screen is visible
         saveState();

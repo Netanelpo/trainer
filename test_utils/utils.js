@@ -20,6 +20,7 @@ export async function setTrainingMode(page) {
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
+        // nextWord: 'run',
         phase: 'training',
         trainingMode: 'EN_TO_TARGET_TRAINING',
     });
@@ -29,13 +30,28 @@ export async function openPage(page) {
     await page.goto(`${BASE_URL}/`);
 }
 
+export async function setNoWordsAPI(page) {
+    await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                language: 'Hebrew',
+                output: 'this is the output:',
+            }),
+        });
+    });
+}
+
 export async function setAPI(page, extra = {}) {
     await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
         await route.fulfill({
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
+                language: 'Hebrew',
                 output: 'this is the output:',
+                words: ['apple', 'run', 'beautiful'],
                 ...extra, // optional extra fields
             }),
         });

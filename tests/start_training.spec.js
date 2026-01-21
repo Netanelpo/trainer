@@ -3,7 +3,9 @@ import * as utils from "../test_utils/utils";
 
 test.beforeEach(async ({page}, testInfo) => {
     await utils.setWordList(page);
-    await utils.setAPI(page);
+    await utils.setAPI(page, {
+        next_word: 'run',
+    });
 })
 
 test.describe('Start Training Tests', () => {
@@ -12,10 +14,11 @@ test.describe('Start Training Tests', () => {
 
         const response = await utils.clickAndReturn(page, '#modeEnToTarget');
 
-        expect(response).toMatchObject({
+        expect(response).toStrictEqual({
             action: 'EN_TO_TARGET_TRAINING',
             input: '',
             language: 'Hebrew',
+            words: ['apple', 'run', 'beautiful'],
         });
 
         // State updated
@@ -24,6 +27,7 @@ test.describe('Start Training Tests', () => {
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
             phase: 'training',
+            nextWord: 'run',
             trainingMode: 'EN_TO_TARGET_TRAINING'
         });
     });

@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
+import {setNoWordsAPI} from "../test_utils/utils";
 
 test.describe('Word selection tests', () => {
     test('I paste no input and click send - no API calls', async ({page}) => {
@@ -35,17 +36,18 @@ test.describe('Word selection tests', () => {
 
         const response = await utils.clickAndReturn(page, '#sendWordsBtn');
 
-        expect(response).toMatchObject({
+        expect(response).toStrictEqual({
             input: 'apple, run, beautiful',
             action: 'SET_WORDS',
             language: 'Hebrew',
+            words: [],
         });
     });
 
     test('API returns words - words are visible', async ({page}) => {
         await utils.openPage(page);
 
-        await utils.setAPI(page, {words: ['apple', 'run', 'beautiful']});
+        await utils.setAPI(page);
 
         await page.fill('#wordsInput', 'apple, run, beautiful');
 
@@ -66,7 +68,7 @@ test.describe('Word selection tests', () => {
     test('API returns no words', async ({page}) => {
         await utils.openPage(page);
 
-        await utils.setAPI(page);
+        await utils.setNoWordsAPI(page);
 
         await page.fill('#wordsInput', 'hi');
 

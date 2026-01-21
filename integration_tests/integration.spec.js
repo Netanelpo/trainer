@@ -1,8 +1,6 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
 
-const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
-
 test.beforeEach(async ({page}, testInfo) => {
     page.on('console', (msg) => {
         console.log(`[${testInfo.title}] [browser:${msg.type()}] ${msg.text()}`);
@@ -47,6 +45,7 @@ test.describe('Integration tests', () => {
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
             phase: 'training',
+            nextWord: 'apple',
             trainingMode: 'EN_TO_TARGET_TRAINING'
         });
     });

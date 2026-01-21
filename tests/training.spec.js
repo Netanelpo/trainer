@@ -14,7 +14,7 @@ test.describe('Training tests', () => {
 
         const response = await utils.clickAndReturn(page, '#chatSendBtn');
 
-        expect(response).toMatchObject({
+        expect(response).toStrictEqual({
             action: 'EN_TO_TARGET_TRAINING',
             input: 'second input',
             language: 'Hebrew',
