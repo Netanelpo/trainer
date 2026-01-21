@@ -1,10 +1,5 @@
-import {test, expect} from '@playwright/test';
+import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
-
-test.afterEach(async ({page}) => {
-    await page.evaluate(() => localStorage.removeItem('polyglot_state'));
-});
-
 
 test.describe('Language selection', () => {
     test('Default language on first visit is Hebrew (RTL + Hebrew strings)', async ({page}) => {
@@ -64,7 +59,7 @@ test.describe('Language selection', () => {
     });
 
     test('In Mode Select phase, target language labels update when language changes', async ({page}) => {
-        await utils.setLocalStorage(page);
+        await utils.setWordList(page);
 
         await utils.openPage(page);
 
@@ -82,7 +77,7 @@ test.describe('Language selection', () => {
     });
 
     test('Changing language does NOT reset words list / word count', async ({page}) => {
-        await utils.setLocalStorage(page);
+        await utils.setWordList(page);
 
         await utils.openPage(page);
 

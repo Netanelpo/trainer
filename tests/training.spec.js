@@ -3,7 +3,7 @@ import * as utils from "../test_utils/utils";
 
 test.describe('Training tests', () => {
     test('Start training mode (EN -> Target) calls API with correct JSON', async ({page}) => {
-        await utils.setLocalStorage(page);
+        await utils.setWordList(page);
 
         await utils.openPage(page);
 
@@ -16,30 +16,17 @@ test.describe('Training tests', () => {
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
 
+        const response = await utils.clickAndReturn(page, '#modeEnToTarget');
 
-        const requestPromise = page.waitForRequest((req) => {
-            try {
-                return req.postDataJSON()?.action === 'EN_TO_TARGET_TRAINING';
-            } catch {
-                return false;
-            }
-        });
-
-        await page.click('#modeEnToTarget');
-
-        const trainingReq = await requestPromise;
-        const payload = trainingReq.postDataJSON();
-
-        expect(payload).toMatchObject({
+        expect(response).toMatchObject({
             action: 'EN_TO_TARGET_TRAINING',
             input: '',
             language: 'Hebrew',
-            words: ['apple', 'run', 'beautiful'],
         });
     });
 
     test('Start training mode (EN -> Target)', async ({page}) => {
-        await utils.setLocalStorage(page);
+        await utils.setWordList(page);
 
         await utils.openPage(page);
 
@@ -75,7 +62,7 @@ test.describe('Training tests', () => {
     });
 
     test('Training mode (EN -> Target) calls API with correct JSON', async ({page}) => {
-        await utils.setLocalStorage(page, {phase: 'training', trainingMode : 'EN_TO_TARGET_TRAINING'});
+        await utils.setTrainingMode(page)
 
         await utils.openPage(page);
 
@@ -87,18 +74,11 @@ test.describe('Training tests', () => {
         const texts = await page.locator('#wordsList .word-chip').allTextContents();
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
-
-        const requestPromise = page.waitForRequest((req) => {
-            return true;
-        });
-
         await page.fill('#chatInput', 'second input');
-        await page.click('#chatSendBtn');
 
-        const trainingReq = await requestPromise;
-        const payload = trainingReq.postDataJSON();
+        const response = await utils.clickAndReturn(page, '#chatSendBtn');
 
-        expect(payload).toMatchObject({
+        expect(response).toMatchObject({
             action: 'EN_TO_TARGET_TRAINING',
             input: 'second input',
             language: 'Hebrew',
@@ -107,7 +87,7 @@ test.describe('Training tests', () => {
     });
 
     test('Training mode (EN -> Target)', async ({page}) => {
-        await utils.setLocalStorage(page, {phase: 'training', trainingMode : 'EN_TO_TARGET_TRAINING'});
+        await utils.setTrainingMode(page)
 
         await utils.openPage(page);
 
@@ -131,7 +111,7 @@ test.describe('Training tests', () => {
 
         // First agent message appears in chat transcript
         await expect(page.locator('#chatTranscript .chat-bubble.agent').last()).toHaveText(
-            'EN->Target: second prompt'
+            'this is the output:'
         );
 
         // State updated

@@ -1,16 +1,25 @@
-import {expect} from "@playwright/test";
-
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
 const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
-export async function setLocalStorage(page, {phase = 'setup', trainingMode = null} = {phase: 'setup'}) {
+export async function setWordList(page) {
     await page.addInitScript((st) => {
         localStorage.setItem('polyglot_state', JSON.stringify(st));
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
-        phase,
-        trainingMode,
+        phase: 'setup',
+        trainingMode: null,
+    });
+}
+
+export async function setTrainingMode(page) {
+    await page.addInitScript((st) => {
+        localStorage.setItem('polyglot_state', JSON.stringify(st));
+    }, {
+        language: 'Hebrew',
+        words: ['apple', 'run', 'beautiful'],
+        phase: 'training',
+        trainingMode: 'EN_TO_TARGET_TRAINING',
     });
 }
 
@@ -45,4 +54,15 @@ export async function setExceptionAPI(page) {
     await page.route(`${AGENT_ENDPOINT}**`, async () => {
         throw new Error('Unexpected API call to /api/agent');
     });
+}
+
+export async function clickAndReturn(page, selector) {
+    const [req] = await Promise.all([
+        page.waitForRequest((req) => {
+            return req.url().includes(AGENT_ENDPOINT) && req.method() === 'POST';
+        }, {timeout: 30000}),
+        page.locator(selector).click(),
+    ]);
+
+    return req.postDataJSON();
 }

@@ -33,19 +33,9 @@ test.describe('Word selection (Set Words) — tests', () => {
 
         await page.fill('#wordsInput', 'apple, run, beautiful');
 
-        // Wait specifically for the SET_WORDS request (so other calls won't satisfy it).
-        const reqPromise = page.waitForRequest((req) => {
-            if (req.method() !== 'POST') return false;
-            const body = req.postDataJSON?.();
-            return body?.action === 'SET_WORDS';
-        });
+        const response = await utils.clickAndReturn(page, '#sendWordsBtn');
 
-        await page.click('#sendWordsBtn');
-
-        const req = await reqPromise; // <- if you delete the click, this will timeout and FAIL
-        const body = req.postDataJSON();
-
-        expect(body).toMatchObject({
+        expect(response).toMatchObject({
             input: 'apple, run, beautiful',
             action: 'SET_WORDS',
             language: 'Hebrew',
