@@ -389,3 +389,17 @@ button {
         flex-direction: column;
     }
 }
+
+.mode-buttons {
+    direction: ltr;            /* stable order even when page is rtl */
+}
+
+.btn-mode {
+    direction: ltr;            /* stable label order */
+    unicode-bidi: isolate;     /* prevent bidi reordering surprises */
+}
+
+.btn-mode .target-lang-name,
+.btn-mode .mode-arrow {
+    unicode-bidi: isolate;
+}

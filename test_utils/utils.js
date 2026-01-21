@@ -49,7 +49,6 @@ export async function setAPI(page, extra = {}) {
             status: 200,
             contentType: 'application/json',
             body: JSON.stringify({
-                language: 'Hebrew',
                 output: 'this is the output:',
                 words: ['apple', 'run', 'beautiful'],
                 ...extra, // optional extra fields
