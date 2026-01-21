@@ -1,28 +1,9 @@
-import {test, expect} from '@playwright/test';
-
-const BASE_URL =
-    process.env.PW_BASE_URL ||
-    process.env.BASE_URL ||
-    'http://localhost:3000';
-
-function stateWith(overrides = {}) {
-    return {
-        language: 'Hebrew',
-        words: [],
-        phase: 'setup',
-        trainingMode: null,
-        ...overrides,
-    };
-}
-
-test.afterEach(async ({page}) => {
-    await page.evaluate(() => localStorage.removeItem('polyglot_state'));
-});
-
+import {expect, test} from '@playwright/test';
+import * as utils from "../test_utils/utils";
 
 test.describe('Language selection', () => {
     test('Default language on first visit is Hebrew (RTL + Hebrew strings)', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#languageSelect')).toHaveValue('Hebrew');
         await expect(page.locator('#currentLangBadge')).toHaveText('Language: עברית');
@@ -36,7 +17,7 @@ test.describe('Language selection', () => {
     });
 
     test('Switching language to Russian updates i18n texts + LTR + badge', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.selectOption('#languageSelect', 'Russian');
 
@@ -52,7 +33,7 @@ test.describe('Language selection', () => {
     });
 
     test('Switching back to Hebrew restores RTL + lang=he', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.selectOption('#languageSelect', 'Ukrainian');
         await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
@@ -65,7 +46,7 @@ test.describe('Language selection', () => {
     });
 
     test('Language selection persists after reload (localStorage)', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.selectOption('#languageSelect', 'French');
         await expect(page.locator('#currentLangBadge')).toHaveText('Language: Français');
@@ -78,17 +59,9 @@ test.describe('Language selection', () => {
     });
 
     test('In Mode Select phase, target language labels update when language changes', async ({page}) => {
-        const initial = stateWith({
-            language: 'Hebrew',
-            words: ['apple', 'run'],
-            phase: 'setup', // setup + words => modeSelectPhase visible
-        });
+        await utils.setWordList(page);
 
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, initial);
-
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
         await expect(page.locator('#setupPhase')).toBeHidden();
@@ -104,30 +77,22 @@ test.describe('Language selection', () => {
     });
 
     test('Changing language does NOT reset words list / word count', async ({page}) => {
-        const initial = stateWith({
-            language: 'Russian',
-            words: ['engineer', 'brave', 'clear'],
-            phase: 'setup',
-        });
+        await utils.setWordList(page);
 
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, initial);
-
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#wordCount')).toHaveText('3');
         await expect(page.locator('#wordsList .word-chip')).toHaveCount(3);
-        await expect(page.locator('#wordsList')).toContainText('engineer');
-        await expect(page.locator('#wordsList')).toContainText('brave');
-        await expect(page.locator('#wordsList')).toContainText('clear');
+        await expect(page.locator('#wordsList')).toContainText('apple');
+        await expect(page.locator('#wordsList')).toContainText('run');
+        await expect(page.locator('#wordsList')).toContainText('beautiful');
 
-        await page.selectOption('#languageSelect', 'Hebrew');
+        await page.selectOption('#languageSelect', 'Russian');
 
         await expect(page.locator('#wordCount')).toHaveText('3');
         await expect(page.locator('#wordsList .word-chip')).toHaveCount(3);
-        await expect(page.locator('#wordsList')).toContainText('engineer');
-        await expect(page.locator('#wordsList')).toContainText('brave');
-        await expect(page.locator('#wordsList')).toContainText('clear');
+        await expect(page.locator('#wordsList')).toContainText('apple');
+        await expect(page.locator('#wordsList')).toContainText('run');
+        await expect(page.locator('#wordsList')).toContainText('beautiful');
     });
 });

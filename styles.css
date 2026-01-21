@@ -114,9 +114,7 @@ select {
     flex-shrink: 0;
 }
 
-/* FIX 1: Sidebar Content Layout
-   The content area now scrolls as one unit, containing both list and button
-*/
+/* Sidebar Content Layout */
 .sidebar-content {
     padding: 1rem;
     overflow-y: auto;
@@ -161,7 +159,14 @@ select {
     flex: 1;
     display: flex;
     flex-direction: column;
-    overflow-y: auto;
+    overflow-y: auto; /* Default for Setup/Mode forms */
+}
+
+/* FIX: Training Phase Specific Layout
+   This ensures the input bar stays sticky at the bottom
+   while the transcript scrolls inside. */
+#trainingPhase {
+    overflow: hidden;
 }
 
 .hidden {
@@ -227,19 +232,44 @@ textarea {
     border-bottom-left-radius: 0;
 }
 
+/* ====== UPDATED: Make the training input much more visible ====== */
 .chat-input-area {
     display: flex;
     gap: 0.5rem;
-    padding-top: 0.5rem;
+    padding: 0.75rem;
     flex-shrink: 0;
+    background: var(--panel-bg);
+    border-top: 1px solid var(--border-color);
 }
 
-.chat-input-area input {
+#chatInput {
     flex: 1;
-    padding: 0.75rem;
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius);
+    padding: 1rem 1rem;
+    border: 2px solid var(--primary-color);
+    border-radius: calc(var(--radius) + 0.25rem);
+    font-size: 1.05rem;
+    line-height: 1.2;
+    min-height: 52px;
+    background: #fff;
+    box-shadow: var(--shadow);
 }
+
+#chatInput:focus,
+#chatInput:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.25), var(--shadow);
+}
+
+#chatInput::placeholder {
+    color: var(--text-muted);
+    opacity: 0.85;
+}
+
+#chatSendBtn {
+    min-height: 52px;
+    padding: 0.75rem 1.25rem;
+}
+/* =============================================================== */
 
 /* Buttons */
 button {
@@ -304,9 +334,9 @@ button {
     justify-content: center;
 }
 
-/* Feedback Area (Used in Setup and Mode Select) */
+/* Feedback Area */
 .chat-preview {
-    background-color: #e0e7ff; /* Light indigo */
+    background-color: #e0e7ff;
     color: #3730a3;
     padding: 1rem;
     border-radius: var(--radius);
@@ -314,7 +344,7 @@ button {
     border: 1px solid #c7d2fe;
     font-style: italic;
     text-align: center;
-    white-space: pre-wrap; /* Ensure newlines in messages render nicely */
+    white-space: pre-wrap;
 }
 .chat-preview:empty {
     display: none;
@@ -331,7 +361,7 @@ button {
     font-size: 0.875rem;
     text-align: center;
     transition: all 0.2s;
-    margin-top: 0.5rem; /* Small spacing from the list */
+    margin-top: 0.5rem;
 }
 
 .btn-reset:hover {

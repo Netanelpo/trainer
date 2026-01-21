@@ -125,7 +125,8 @@ const defaultState = {
     language: 'Hebrew',
     words: [],
     phase: 'setup', // 'setup', 'training', 'done'
-    trainingMode: null, // 'EN_TO_TARGET', 'TARGET_TO_EN'
+    trainingMode: null, // 'EN_TO_TARGET_TRAINING', 'TARGET_TO_EN_TRAINING'
+    // nextWord: null,
 };
 
 let state = {...defaultState};
@@ -272,6 +273,7 @@ async function callAgent(action, inputVal = "") {
         action: action,
         language: state.language,
         words: state.words,
+        // next_word: state.nextWord,
     };
 
     try {
@@ -296,25 +298,23 @@ async function callAgent(action, inputVal = "") {
             state.words = response.words;
         }
 
-        if (response.isDone) {
-            state.phase = 'done';
-        }
+        // if (response.next_word) {
+        //     state.nextWord = response.next_word;
+        // }
 
         // Save and Update UI *before* showing output messages so the correct screen is visible
         saveState();
         updateUI();
 
-        // FIX 2: Handle output message visibility depending on resulting phase
+        // Handle output message visibility depending on resulting phase
         if (action === 'SET_WORDS' && response.output) {
             if (state.words.length > 0) {
-                // We successfully got words, now on Mode Select screen
                 const feedbackEl = document.getElementById('modeSelectFeedback');
                 if (feedbackEl) {
                     feedbackEl.textContent = response.output;
                     feedbackEl.classList.remove('hidden');
                 }
             } else {
-                // Failed to get words, still on Setup screen
                 const feedbackEl = document.getElementById('setupFeedback');
                 if (feedbackEl) {
                     feedbackEl.textContent = response.output;
@@ -324,6 +324,10 @@ async function callAgent(action, inputVal = "") {
         } else if (response.output) {
             // Normal chat response
             addChatBubble(response.output, 'agent');
+            // FIX: Focus input after agent replies for better UX
+            if(state.phase === 'training') {
+                setTimeout(() => document.getElementById('chatInput').focus(), 50);
+            }
         }
 
     } catch (err) {
@@ -378,20 +382,28 @@ function bindEvents() {
     // 3. Start Training (EN -> Target)
     document.getElementById('modeEnToTarget').addEventListener('click', () => {
         state.phase = 'training';
-        state.trainingMode = 'EN_TO_TARGET';
+        state.trainingMode = 'EN_TO_TARGET_TRAINING';
         resetTranscript();
         saveState();
         updateUI();
+
+        // NEW: Focus input immediately when training starts
+        setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
+
         callAgent('EN_TO_TARGET_TRAINING', '');
     });
 
     // 4. Start Training (Target -> EN)
     document.getElementById('modeTargetToEn').addEventListener('click', () => {
         state.phase = 'training';
-        state.trainingMode = 'TARGET_TO_EN';
+        state.trainingMode = 'TARGET_TO_EN_TRAINING';
         resetTranscript();
         saveState();
         updateUI();
+
+        // NEW: Focus input immediately when training starts
+        setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
+
         callAgent('TARGET_TO_EN_TRAINING', '');
     });
 
