@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
+import * as utils from "../test_utils/utils";
 
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
-const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
 test.beforeEach(async ({ page }, testInfo) => {
     page.on('console', (msg) => {
@@ -11,7 +11,8 @@ test.beforeEach(async ({ page }, testInfo) => {
 
 test.describe('Integration tests', () => {
     test('Case 1', async ({ page }) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
+
         await page.fill('#wordsInput', 'apple, run, beautiful');
 
         const [res] = await Promise.all([
@@ -46,16 +47,9 @@ test.describe('Integration tests', () => {
     });
 
     test('Case 2', async ({ page }) => {
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, {
-            language: 'Hebrew',
-            words: ['apple', 'run', 'beautiful'],
-            phase: 'setup',
-            trainingMode: null
-        });
+        await utils.setLocalStorage(page);
 
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         const [res] = await Promise.all([
             page.waitForResponse(r =>

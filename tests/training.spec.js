@@ -1,19 +1,13 @@
 import {expect, test} from '@playwright/test';
+import * as utils from "../test_utils/utils";
 
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
-const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
 test.describe('Training tests', () => {
     test('Start training mode (EN -> Target) calls API with correct JSON', async ({page}) => {
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, {
-            language: 'Hebrew',
-            words: ['apple', 'run', 'beautiful'],
-            phase: 'setup',
-        });
+        await utils.setLocalStorage(page);
 
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
@@ -52,15 +46,9 @@ test.describe('Training tests', () => {
     });
 
     test('Start training mode (EN -> Target)', async ({page}) => {
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, {
-            language: 'Hebrew',
-            words: ['apple', 'run', 'beautiful'],
-            phase: 'setup',
-        });
+        await utils.setLocalStorage(page);
 
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
@@ -99,16 +87,9 @@ test.describe('Training tests', () => {
     });
 
     test('Training mode (EN -> Target) calls API with correct JSON', async ({page}) => {
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, {
-            language: 'Hebrew',
-            words: [ 'apple', 'run', 'beautiful' ],
-            phase: 'training',
-            trainingMode: 'EN_TO_TARGET_TRAINING'
-        });
+        await utils.setLocalStorage(page, {phase: 'training', trainingMode : 'EN_TO_TARGET_TRAINING'});
 
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeHidden();
@@ -152,16 +133,9 @@ test.describe('Training tests', () => {
     });
 
     test('Training mode (EN -> Target)', async ({page}) => {
-        await page.addInitScript((st) => {
-            localStorage.setItem('polyglot_state', JSON.stringify(st));
-        }, {
-            language: 'Hebrew',
-            words: [ 'apple', 'run', 'beautiful' ],
-            phase: 'training',
-            trainingMode: 'EN_TO_TARGET_TRAINING'
-        });
+        await utils.setLocalStorage(page, {phase: 'training', trainingMode : 'EN_TO_TARGET_TRAINING'});
 
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeHidden();

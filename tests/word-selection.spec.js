@@ -1,11 +1,11 @@
 import {expect, test} from '@playwright/test';
+import * as utils from "../test_utils/utils";
 
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
-const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
 test.describe('Word selection (Set Words) — tests', () => {
     test('I paste no input and click send - no API calls', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         // Fail fast if the agent API is called
         await page.route(`${AGENT_ENDPOINT}**`, async () => {
@@ -20,7 +20,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     });
 
     test('I paste hi and click send - API returns 500 -> shows error banner', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
             await route.fulfill({
@@ -38,7 +38,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     });
 
     test('I paste words - calls API with correct JSON', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
             await route.fulfill({
@@ -69,7 +69,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     });
 
     test('API returns words - words are visible', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
             await route.fulfill({
@@ -99,7 +99,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     });
 
     test('API returns no words', async ({page}) => {
-        await page.goto(`${BASE_URL}/`);
+        await utils.openPage(page);
 
         await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
             await route.fulfill({
