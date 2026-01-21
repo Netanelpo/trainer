@@ -1,3 +1,5 @@
+import {expect} from "@playwright/test";
+
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
 const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
@@ -65,4 +67,22 @@ export async function clickAndReturn(page, selector) {
     ]);
 
     return req.postDataJSON();
+}
+
+export async function expectSetupPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeVisible();
+    await expect(page.locator('#modeSelectPhase')).toBeHidden();
+    await expect(page.locator('#trainingPhase')).toBeHidden();
+}
+
+export async function expectModeSelectPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeHidden();
+    await expect(page.locator('#modeSelectPhase')).toBeVisible();
+    await expect(page.locator('#trainingPhase')).toBeHidden();
+}
+
+export async function expectTrainingPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeHidden();
+    await expect(page.locator('#modeSelectPhase')).toBeHidden();
+    await expect(page.locator('#trainingPhase')).toBeVisible();
 }

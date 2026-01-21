@@ -1,7 +1,7 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
 
-test.describe('Word selection (Set Words) — tests', () => {
+test.describe('Word selection tests', () => {
     test('I paste no input and click send - no API calls', async ({page}) => {
         await utils.openPage(page);
 
