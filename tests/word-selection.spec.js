@@ -1,16 +1,11 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
 
-const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
-
 test.describe('Word selection (Set Words) — tests', () => {
     test('I paste no input and click send - no API calls', async ({page}) => {
         await utils.openPage(page);
 
-        // Fail fast if the agent API is called
-        await page.route(`${AGENT_ENDPOINT}**`, async () => {
-            throw new Error('Unexpected API call to /api/agent');
-        });
+        await utils.setExceptionAPI(page);
 
         await expect(page.locator('#wordCount')).toHaveText('0');
         await expect(page.locator('#wordsList .empty-state')).toBeVisible();
@@ -22,13 +17,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     test('I paste hi and click send - API returns 500 -> shows error banner', async ({page}) => {
         await utils.openPage(page);
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            await route.fulfill({
-                status: 500,
-                contentType: 'application/json',
-                body: JSON.stringify({error: 'boom'}),
-            });
-        });
+        await utils.setErrorAPI(page);
 
         await page.fill('#wordsInput', 'hi');
         await page.click('#sendWordsBtn');
@@ -40,17 +29,12 @@ test.describe('Word selection (Set Words) — tests', () => {
     test('I paste words - calls API with correct JSON', async ({page}) => {
         await utils.openPage(page);
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            await route.fulfill({
-                status: 200,
-            });
-        });
+        await utils.setAPI(page);
 
         await page.fill('#wordsInput', 'apple, run, beautiful');
 
         // Wait specifically for the SET_WORDS request (so other calls won't satisfy it).
         const reqPromise = page.waitForRequest((req) => {
-            if (!req.url().includes(AGENT_ENDPOINT)) return false;
             if (req.method() !== 'POST') return false;
             const body = req.postDataJSON?.();
             return body?.action === 'SET_WORDS';
@@ -71,16 +55,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     test('API returns words - words are visible', async ({page}) => {
         await utils.openPage(page);
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                    output: 'this is the output:',
-                    words: ['apple', 'run', 'beautiful'],
-                }),
-            });
-        });
+        await utils.setAPI(page, {words: ['apple', 'run', 'beautiful']});
 
         await page.fill('#wordsInput', 'apple, run, beautiful');
 
@@ -101,15 +76,7 @@ test.describe('Word selection (Set Words) — tests', () => {
     test('API returns no words', async ({page}) => {
         await utils.openPage(page);
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            await route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({
-                    output: 'this is the output:',
-                }),
-            });
-        });
+        await utils.setAPI(page);
 
         await page.fill('#wordsInput', 'hi');
 

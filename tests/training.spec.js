@@ -1,13 +1,13 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
 
-const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app'; // Configurable proxy endpoint
-
 test.describe('Training tests', () => {
     test('Start training mode (EN -> Target) calls API with correct JSON', async ({page}) => {
         await utils.setLocalStorage(page);
 
         await utils.openPage(page);
+
+        await utils.setAPI(page);
 
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
@@ -16,13 +16,6 @@ test.describe('Training tests', () => {
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({output: 'EN->Target: first prompt'}),
-            });
-        })
 
         const requestPromise = page.waitForRequest((req) => {
             try {
@@ -50,6 +43,8 @@ test.describe('Training tests', () => {
 
         await utils.openPage(page);
 
+        await utils.setAPI(page);
+
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeVisible();
 
@@ -57,13 +52,6 @@ test.describe('Training tests', () => {
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({output: 'EN->Target: first prompt'}),
-            });
-        })
 
         await page.click('#modeEnToTarget');
 
@@ -73,7 +61,7 @@ test.describe('Training tests', () => {
 
         // First agent message appears in chat transcript
         await expect(page.locator('#chatTranscript .chat-bubble.agent').last()).toHaveText(
-            'EN->Target: first prompt'
+            'this is the output:'
         );
 
         // State updated
@@ -91,28 +79,14 @@ test.describe('Training tests', () => {
 
         await utils.openPage(page);
 
+        await utils.setAPI(page);
+
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeHidden();
 
         const texts = await page.locator('#wordsList .word-chip').allTextContents();
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
-
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({output: 'EN->Target: second prompt'}),
-            });
-        })
-
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({output: 'EN->Target: first prompt'}),
-            });
-        })
 
         const requestPromise = page.waitForRequest((req) => {
             return true;
@@ -137,6 +111,8 @@ test.describe('Training tests', () => {
 
         await utils.openPage(page);
 
+        await utils.setAPI(page);
+
         await expect(page.locator('#setupPhase')).toBeHidden();
         await expect(page.locator('#modeSelectPhase')).toBeHidden();
 
@@ -144,13 +120,7 @@ test.describe('Training tests', () => {
         expect(texts).toEqual(['apple', 'run', 'beautiful']);
         await expect(page.locator('#wordCount')).toHaveText('3');
 
-        await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
-            return route.fulfill({
-                status: 200,
-                contentType: 'application/json',
-                body: JSON.stringify({output: 'EN->Target: second prompt'}),
-            });
-        })
+
 
         await page.fill('#chatInput', 'second input');
         await page.click('#chatSendBtn');
