@@ -125,7 +125,7 @@ const defaultState = {
     language: 'Hebrew',
     words: [],
     phase: 'setup', // 'setup', 'training', 'done'
-    trainingMode: null, // 'EN_TO_TARGET_TRAINING', 'TARGET_TO_EN_TRAINING'
+    trainingMode: null, // 'EN_TO_TARGET_TRAINING', 'TARGET_TO_EN_TRAINING', 'EN_TO_TARGET_LAST_QUESTION', 'TARGET_TO_EN_LAST_QUESTION'
 };
 
 let state = {...defaultState};
@@ -261,7 +261,7 @@ async function callAgent(action, inputVal = "") {
     // Clear previous feedbacks
     ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
         const el = document.getElementById(id);
-        if(el) {
+        if (el) {
             el.classList.add('hidden');
             el.textContent = '';
         }
@@ -304,6 +304,13 @@ async function callAgent(action, inputVal = "") {
 
         if (response.remaining) {
             state.remaining = response.remaining;
+            if (state.remaining.length === 0) {
+                if (state.trainingMode === "EN_TO_TARGET_TRAINING") {
+                    state.trainingMode = "EN_TO_TARGET_LAST_QUESTION";
+                } else if (state.trainingMode === "TARGET_TO_EN_TRAINING") {
+                    state.trainingMode = "TARGET_TO_EN_LAST_QUESTION";
+                }
+            }
         }
 
         // Save and Update UI *before* showing output messages so the correct screen is visible
@@ -329,7 +336,7 @@ async function callAgent(action, inputVal = "") {
             // Normal chat response
             addChatBubble(response.output, 'agent');
             // FIX: Focus input after agent replies for better UX
-            if(state.phase === 'training') {
+            if (state.phase === 'training') {
                 setTimeout(() => document.getElementById('chatInput').focus(), 50);
             }
         }
@@ -371,7 +378,7 @@ function bindEvents() {
             document.getElementById('wordsInput').value = '';
             ['setupFeedback', 'modeSelectFeedback'].forEach(id => {
                 const el = document.getElementById(id);
-                if(el) {
+                if (el) {
                     el.textContent = '';
                     el.classList.add('hidden');
                 }
@@ -394,7 +401,7 @@ function bindEvents() {
         // NEW: Focus input immediately when training starts
         setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
 
-        callAgent('EN_TO_TARGET_TRAINING', '');
+        callAgent('EN_TO_TARGET_START_TRAINING', '');
     });
 
     // 4. Start Training (Target -> EN)
@@ -408,7 +415,7 @@ function bindEvents() {
         // NEW: Focus input immediately when training starts
         setTimeout(() => document.getElementById('chatInput')?.focus(), 50);
 
-        callAgent('TARGET_TO_EN_TRAINING', '');
+        callAgent('TARGET_TO_EN_START_TRAINING', '');
     });
 
     // 5. Chat Send
@@ -441,7 +448,7 @@ function bindEvents() {
 
         // Hide feedback when restarting
         const el = document.getElementById('modeSelectFeedback');
-        if(el) el.classList.add('hidden');
+        if (el) el.classList.add('hidden');
 
         saveState();
         updateUI();
