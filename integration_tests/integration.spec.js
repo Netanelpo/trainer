@@ -1,5 +1,6 @@
 import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
+import {setDoneTrainingMode} from "../test_utils/utils";
 
 test.beforeEach(async ({page}, testInfo) => {
     page.on('console', (msg) => {
@@ -131,4 +132,28 @@ test.describe('Integration tests', () => {
 
     });
 
+    test('Last correct answer', async ({page}) => {
+        await utils.setDoneTrainingMode(page);
+
+        await utils.openPage(page);
+
+        await page.fill('#chatInput', 'לרוץ');
+
+        const response = await utils.clickAndReturn(page, '#chatSendBtn');
+        console.log('API response:', response);
+
+        await expect(page.locator('#chatTranscript .chat-bubble.agent').last())
+            .toContainText((response.output || '').trim(), { timeout: 30000 });
+
+        const st = await page.evaluate(() => JSON.parse(localStorage.getItem('polyglot_state')));
+        console.info('State:', st);
+        expect(st).toStrictEqual({
+            language: 'Hebrew',
+            words: ['apple', 'run', 'beautiful'],
+            remaining: [],
+            phase: 'done',
+            nextWord: 'run',
+            trainingMode: 'EN_TO_TARGET_LAST_QUESTION'
+        });
+    })
 });

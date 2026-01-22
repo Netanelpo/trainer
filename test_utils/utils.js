@@ -28,6 +28,19 @@ export async function setTrainingMode(page) {
     });
 }
 
+export async function setDoneTrainingMode(page) {
+    await page.addInitScript((st) => {
+        localStorage.setItem('polyglot_state', JSON.stringify(st));
+    }, {
+        language: 'Hebrew',
+        words: ['apple', 'run', 'beautiful'],
+        remaining: [],
+        nextWord: 'run',
+        phase: 'training',
+        trainingMode: 'EN_TO_TARGET_LAST_QUESTION',
+    });
+}
+
 export async function openPage(page) {
     await page.goto(`${BASE_URL}/`);
 }

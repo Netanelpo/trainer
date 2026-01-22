@@ -302,6 +302,10 @@ async function callAgent(action, inputVal = "") {
             state.nextWord = response.next_word;
         }
 
+        if (response.done_training) {
+            state.phase = 'done';
+        }
+
         if (response.remaining) {
             state.remaining = response.remaining;
             if (state.remaining.length === 0) {
