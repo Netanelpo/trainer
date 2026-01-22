@@ -19,6 +19,7 @@ test.describe('Start Training Tests', () => {
             input: '',
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
+            remaining: ['apple', 'run', 'beautiful'],
         });
 
         // State updated
@@ -26,6 +27,7 @@ test.describe('Start Training Tests', () => {
         expect(st).toStrictEqual({
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
+            remaining: ['apple', 'run', 'beautiful'],
             phase: 'training',
             nextWord: 'run',
             trainingMode: 'EN_TO_TARGET_TRAINING'

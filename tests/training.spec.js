@@ -19,6 +19,8 @@ test.describe('Training tests', () => {
             input: 'second input',
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
+            remaining: ['apple', 'run', 'beautiful'],
+            next_word: 'run',
         });
 
         await expect(page.locator('#chatTranscript .chat-bubble.agent').last()).toHaveText(
@@ -30,7 +32,9 @@ test.describe('Training tests', () => {
         expect(st).toStrictEqual({
             language: 'Hebrew',
             words: [ 'apple', 'run', 'beautiful' ],
+            remaining: ['apple', 'run', 'beautiful'],
             phase: 'training',
+            nextWord: 'run',
             trainingMode: 'EN_TO_TARGET_TRAINING'
         });
     });
