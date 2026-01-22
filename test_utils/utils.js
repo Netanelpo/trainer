@@ -1,3 +1,5 @@
+import {expect} from "@playwright/test";
+
 const AGENT_ENDPOINT = 'https://start-858515335800.me-west1.run.app';
 const BASE_URL = process.env.PW_BASE_URL || process.env.BASE_URL || 'http://localhost:3000';
 
@@ -7,6 +9,7 @@ export async function setWordList(page) {
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
+        remaining: ['apple', 'run', 'beautiful'],
         phase: 'setup',
         trainingMode: null,
     });
@@ -18,6 +21,8 @@ export async function setTrainingMode(page) {
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
+        remaining: ['apple', 'run', 'beautiful'],
+        nextWord: 'run',
         phase: 'training',
         trainingMode: 'EN_TO_TARGET_TRAINING',
     });
@@ -27,6 +32,19 @@ export async function openPage(page) {
     await page.goto(`${BASE_URL}/`);
 }
 
+export async function setNoWordsAPI(page) {
+    await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
+        await route.fulfill({
+            status: 200,
+            contentType: 'application/json',
+            body: JSON.stringify({
+                language: 'Hebrew',
+                output: 'this is the output:',
+            }),
+        });
+    });
+}
+
 export async function setAPI(page, extra = {}) {
     await page.route(`${AGENT_ENDPOINT}**`, async (route) => {
         await route.fulfill({
@@ -34,6 +52,7 @@ export async function setAPI(page, extra = {}) {
             contentType: 'application/json',
             body: JSON.stringify({
                 output: 'this is the output:',
+                words: ['apple', 'run', 'beautiful'],
                 ...extra, // optional extra fields
             }),
         });
@@ -65,4 +84,22 @@ export async function clickAndReturn(page, selector) {
     ]);
 
     return req.postDataJSON();
+}
+
+export async function expectSetupPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeVisible();
+    await expect(page.locator('#modeSelectPhase')).toBeHidden();
+    await expect(page.locator('#trainingPhase')).toBeHidden();
+}
+
+export async function expectModeSelectPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeHidden();
+    await expect(page.locator('#modeSelectPhase')).toBeVisible();
+    await expect(page.locator('#trainingPhase')).toBeHidden();
+}
+
+export async function expectTrainingPhase(page) {
+    await expect(page.locator('#setupPhase')).toBeHidden();
+    await expect(page.locator('#modeSelectPhase')).toBeHidden();
+    await expect(page.locator('#trainingPhase')).toBeVisible();
 }

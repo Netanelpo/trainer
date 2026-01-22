@@ -2,36 +2,31 @@ import {expect, test} from '@playwright/test';
 import * as utils from "../test_utils/utils";
 
 test.beforeEach(async ({page}, testInfo) => {
-    await utils.setTrainingMode(page);
-    await utils.setAPI(page);
+    await utils.setWordList(page);
+    await utils.setAPI(page, {
+        next_word: 'run',
+    });
 })
 
-test.describe('Training tests', () => {
-    test('Send Answer', async ({page}) => {
+test.describe('Start Training Tests', () => {
+    test('English to Target click', async ({page}) => {
         await utils.openPage(page);
 
-        await page.fill('#chatInput', 'second input');
-
-        const response = await utils.clickAndReturn(page, '#chatSendBtn');
+        const response = await utils.clickAndReturn(page, '#modeEnToTarget');
 
         expect(response).toStrictEqual({
             action: 'EN_TO_TARGET_TRAINING',
-            input: 'second input',
+            input: '',
             language: 'Hebrew',
             words: ['apple', 'run', 'beautiful'],
             remaining: ['apple', 'run', 'beautiful'],
-            next_word: 'run',
         });
-
-        await expect(page.locator('#chatTranscript .chat-bubble.agent').last()).toHaveText(
-            'this is the output:'
-        );
 
         // State updated
         const st = await page.evaluate(() => JSON.parse(localStorage.getItem('polyglot_state')));
         expect(st).toStrictEqual({
             language: 'Hebrew',
-            words: [ 'apple', 'run', 'beautiful' ],
+            words: ['apple', 'run', 'beautiful'],
             remaining: ['apple', 'run', 'beautiful'],
             phase: 'training',
             nextWord: 'run',
