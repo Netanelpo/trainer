@@ -126,7 +126,6 @@ const defaultState = {
     words: [],
     phase: 'setup', // 'setup', 'training', 'done'
     trainingMode: null, // 'EN_TO_TARGET_TRAINING', 'TARGET_TO_EN_TRAINING'
-    // nextWord: null,
 };
 
 let state = {...defaultState};
@@ -274,6 +273,7 @@ async function callAgent(action, inputVal = "") {
         language: state.language,
         words: state.words,
         next_word: state.nextWord,
+        remaining: state.remaining,
     };
 
     try {
@@ -300,6 +300,10 @@ async function callAgent(action, inputVal = "") {
 
         if (response.next_word) {
             state.nextWord = response.next_word;
+        }
+
+        if (response.remaining) {
+            state.remaining = response.remaining;
         }
 
         // Save and Update UI *before* showing output messages so the correct screen is visible

@@ -9,6 +9,7 @@ export async function setWordList(page) {
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
+        remaining: ['apple', 'run', 'beautiful'],
         phase: 'setup',
         trainingMode: null,
     });
@@ -20,7 +21,8 @@ export async function setTrainingMode(page) {
     }, {
         language: 'Hebrew',
         words: ['apple', 'run', 'beautiful'],
-        // nextWord: 'run',
+        remaining: ['apple', 'run', 'beautiful'],
+        nextWord: 'run',
         phase: 'training',
         trainingMode: 'EN_TO_TARGET_TRAINING',
     });
